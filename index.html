@@ -1,0 +1,841 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kitetrip Juni 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@75..150,500..900&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: werkbank. Links de knoppen (filters + gewichten), rechts de ranglijst; klik opent een detailpaneel dat over de pagina schuift. */
+:root{
+  --bg:#eef2f3; --panel:#ffffff; --ink:#0f2230; --muted:#5a6d78; --line:#d5dee2;
+  --sea:#0e7c86; --sea-soft:#d9eff0; --kite:#ff5a1f; --kite-soft:#ffe6db;
+  --ok:#1d8a4e; --ok-soft:#dcf2e5; --warn:#b7791f; --warn-soft:#fbefd6; --bad:#c2372c; --bad-soft:#f9dfdc;
+  --shadow:0 1px 2px rgba(15,34,48,.06),0 6px 24px rgba(15,34,48,.07);
+  --f-display:"Anybody","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0b161d; --panel:#122330; --ink:#e6eef2; --muted:#93a8b3; --line:#223a48;
+  --sea:#3cc3cc; --sea-soft:#133a40; --kite:#ff7a45; --kite-soft:#3d2217;
+  --ok:#4cc987; --ok-soft:#153a28; --warn:#e3b04b; --warn-soft:#3a2e14; --bad:#ef6b5f; --bad-soft:#3d1c19;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 24px rgba(0,0,0,.3); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b161d; --panel:#122330; --ink:#e6eef2; --muted:#93a8b3; --line:#223a48;
+  --sea:#3cc3cc; --sea-soft:#133a40; --kite:#ff7a45; --kite-soft:#3d2217;
+  --ok:#4cc987; --ok-soft:#153a28; --warn:#e3b04b; --warn-soft:#3a2e14; --bad:#ef6b5f; --bad-soft:#3d1c19;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 24px rgba(0,0,0,.3); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:20px;padding-block:28px 60px}
+a{color:var(--sea)}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.05}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--kite);outline-offset:2px}
+
+/* header */
+header.top{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;margin-bottom:22px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--sea)}
+h1{font-size:clamp(34px,6vw,64px);font-weight:850;font-stretch:125%;letter-spacing:-.01em;margin-top:6px}
+h1 span{color:var(--kite)}
+.brief{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.brief span{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:13px}
+.ko-legend{font-size:13px;color:var(--muted);max-width:320px}
+@media (max-width:760px){header.top{grid-template-columns:1fr}}
+
+.grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+/* sidebar */
+aside{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:18px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+@media (max-width:900px){aside{position:static}}
+aside h3{font-size:15px;font-weight:750;font-stretch:110%;letter-spacing:.02em;text-transform:uppercase}
+.ctl{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px}
+.row label{cursor:pointer}
+input[type=range]{width:100%;accent-color:var(--kite)}
+input[type=checkbox]{accent-color:var(--kite);width:16px;height:16px}
+select{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:5px 8px}
+.w-row{display:grid;grid-template-columns:1fr 34px;gap:2px 8px;align-items:center;font-size:13px}
+.w-row input{grid-column:1/-1}
+details summary{cursor:pointer;font-weight:600;font-size:14px}
+.btn-link{background:none;border:0;color:var(--sea);cursor:pointer;padding:0;font-size:13px;text-decoration:underline}
+
+/* list */
+.list{display:flex;flex-direction:column;gap:12px}
+.card{display:grid;grid-template-columns:44px 150px minmax(0,1fr) 92px;gap:16px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 16px 12px 12px;cursor:pointer;text-align:left;width:100%;transition:transform .15s ease,box-shadow .15s ease}
+.card:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.rank{font-family:var(--f-display);font-size:30px;font-weight:850;color:var(--muted);text-align:center;font-stretch:80%}
+.card.first .rank{color:var(--kite)}
+.thumb{border-radius:10px;overflow:hidden;aspect-ratio:3/2;max-width:100%}
+.thumb svg,.thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.hero img.hi{display:block;width:100%;aspect-ratio:1000/420;object-fit:cover;max-width:100%}
+.hero .cap{position:absolute;left:10px;bottom:8px;font-size:11px;color:#fff;background:rgba(0,0,0,.45);padding:2px 7px;border-radius:5px;max-width:calc(100% - 20px)}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.gal figure{margin:0;display:flex;flex-direction:column;gap:4px}
+.gal img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:8px;max-width:100%}
+.gal figcaption{font-size:11.5px;color:var(--muted)}
+.villa .vimg{grid-column:1/-1;width:100%;aspect-ratio:16/7;object-fit:cover;border-radius:8px;max-width:100%}
+.cbody{min-width:0;display:flex;flex-direction:column;gap:6px}
+.cbody h2{font-size:24px;font-weight:800;font-stretch:115%}
+.cbody .sub{font-size:13px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;border-radius:6px;padding:2px 7px;background:var(--bg);border:1px solid var(--line);white-space:nowrap}
+.chip b{font-family:var(--f-mono);font-weight:600}
+.ko{display:flex;flex-wrap:wrap;gap:5px}
+.pill{font-size:11px;font-weight:600;border-radius:999px;padding:1px 8px;letter-spacing:.02em}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.grens{background:var(--warn-soft);color:var(--warn)}
+.pill.nee{background:var(--bad-soft);color:var(--bad)}
+.score{justify-self:end;text-align:center}
+.score .num{font-family:var(--f-display);font-weight:900;font-size:30px;font-stretch:90%;line-height:1}
+.score .num small{font-size:15px}
+.score .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.ring{width:84px;height:84px;position:relative;display:grid;place-items:center}
+.ring svg{position:absolute;inset:0}
+@media (max-width:640px){
+  .card{grid-template-columns:34px minmax(0,1fr) 76px;gap:10px}
+  .thumb{display:none}
+  .ring{width:70px;height:70px}
+  .score .num{font-size:24px}
+}
+.empty{background:var(--panel);border:1px dashed var(--line);border-radius:14px;padding:30px;text-align:center;color:var(--muted)}
+
+/* detail overlay */
+.overlay{position:fixed;inset:0;background:rgba(8,20,28,.55);display:flex;justify-content:flex-end;z-index:20}
+.drawer{background:var(--bg);width:min(860px,100%);height:100%;overflow-y:auto;padding:0 0 calc(40px + env(safe-area-inset-bottom,0px))}
+.hero{position:relative}
+.hero svg{display:block;width:100%;height:auto}
+.hero .close{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:12px;background:var(--panel);border:1px solid var(--line);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:18px}
+.dhead{padding:18px 22px 6px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center}
+.dhead h2{font-size:clamp(28px,5vw,44px);font-weight:850;font-stretch:120%}
+.dbody{padding:0 22px;display:flex;flex-direction:column;gap:18px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);padding-top:8px;z-index:2}
+.tab{background:none;border:0;padding:8px 12px;cursor:pointer;font-weight:600;color:var(--muted);border-bottom:2px solid transparent}
+.tab[aria-selected=true]{color:var(--ink);border-color:var(--kite)}
+.sec{display:flex;flex-direction:column;gap:14px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.box h3{font-size:17px;font-weight:750;font-stretch:110%;margin-bottom:6px}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kv div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kv .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.kv .v{font-family:var(--f-mono);font-size:17px;font-weight:600}
+.bar{height:10px;background:var(--sea-soft);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--sea);border-radius:99px}
+.subscores{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 18px}
+.ss{display:grid;grid-template-columns:1fr 40px;gap:3px 10px;align-items:center;font-size:13px}
+.ss .bar{grid-column:1/-1;height:7px}
+.ss .bar i{background:var(--kite)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+.tbl{overflow-x:auto}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.villa{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px}
+.villa h4{margin:0;font-size:16px}
+.villa .price{font-family:var(--f-mono);font-weight:600;text-align:right}
+.villa .meta{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.villa p{grid-column:1/-1;margin:0;font-size:14px}
+.flag{font-size:12px;font-weight:600;color:var(--warn)}
+ul.pm{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.two{grid-template-columns:1fr}.dhead{grid-template-columns:1fr}}
+.note{font-size:13px;color:var(--muted)}
+.cost{font-family:var(--f-mono)}
+.cost td:last-child,.cost th:last-child{text-align:right}
+.cost tr.tot td{font-weight:700;border-bottom:0}
+.compass{width:64px;height:64px}
+footer{margin-top:30px;font-size:13px;color:var(--muted);max-width:760px}
+@media (prefers-reduced-motion:reduce){.card{transition:none}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Groepsreis · 9 kiters · 7 nachten</div>
+      <h1>Kitetrip <span>juni 2027</span></h1>
+      <div class="brief">
+        <span>do 17 t/m do 24 juni 2027</span>
+        <span>Vertrek AMS (EIN dicht tot 18 juli 2027)</span>
+        <span>Villa ≥ 7 slaapkamers</span>
+        <span>≤ 6 u direct</span>
+        <span>Spot ≤ 30 min</span>
+        <span>≤ €1.000 p.p.</span>
+      </div>
+    </div>
+    <p class="ko-legend">Knock-outs per bestemming:
+      <span class="pill ok">ok</span> voldoet,
+      <span class="pill grens">grens</span> onzeker of net aan,
+      <span class="pill nee">nee</span> voldoet niet.
+      Prijzen zijn schattingen (juni 2027 is nog niet overal boekbaar).</p>
+  </header>
+
+  <div class="grid">
+    <aside aria-label="Filters en weging">
+      <div class="ctl">
+        <h3>Filter</h3>
+        <div class="row"><label for="f-ko">Alleen zonder knock-out "nee"</label><input type="checkbox" id="f-ko"></div>
+        <div class="row"><label for="f-waves">Golfrijden mogelijk</label><input type="checkbox" id="f-waves"></div>
+        <div class="row"><label for="f-warm">Geen wetsuit nodig (water ≥ 24 °C)</label><input type="checkbox" id="f-warm"></div>
+        <div class="row"><label for="f-single">Eén villa voor de hele groep</label><input type="checkbox" id="f-single"></div>
+        <div>
+          <div class="row"><label for="f-price">Max. prijs p.p.</label><span class="mono" id="f-price-v"></span></div>
+          <input type="range" id="f-price" min="800" max="1500" step="25" value="1500">
+        </div>
+        <div>
+          <div class="row"><label for="f-wind">Min. windkans juni</label><span class="mono" id="f-wind-v"></span></div>
+          <input type="range" id="f-wind" min="40" max="85" step="5" value="40">
+        </div>
+        <div>
+          <div class="row"><label for="f-drive">Max. rijtijd naar spot</label><span class="mono" id="f-drive-v"></span></div>
+          <input type="range" id="f-drive" min="5" max="30" step="5" value="30">
+        </div>
+        <div class="row"><label for="f-sort">Sorteer op</label>
+          <select id="f-sort">
+            <option value="score">Eindscore</option>
+            <option value="price">Prijs p.p.</option>
+            <option value="wind">Windzekerheid</option>
+            <option value="drive">Afstand spot</option>
+          </select>
+        </div>
+      </div>
+      <div class="ctl">
+        <h3>Weging</h3>
+        <div class="row"><label for="f-pen">Knock-outs tellen mee in score</label><input type="checkbox" id="f-pen" checked></div>
+        <p class="note" style="margin:0">Aftrek: 10 punten per "nee", 3 per "grens".</p>
+        <details id="wdet">
+          <summary>Gewicht per wens aanpassen</summary>
+          <div id="weights" class="ctl" style="margin-top:10px"></div>
+          <button class="btn-link" id="wreset" type="button">Standaardweging terugzetten</button>
+        </details>
+      </div>
+    </aside>
+
+    <main>
+      <div class="list" id="list"></div>
+      <footer>
+        <p>Onderzocht: 14 bestemmingen met goede juniwind binnen 6 uur direct vliegen vanaf Nederland. Windcijfers zijn schattingen uit Windfinder, windy.app, TheKiteSpot en spotgidsen. Vluchtschema's zijn gebaseerd op zomer 2026 als voorspeller voor 2027. Villaprijzen zijn geschat voor eind juni; controleer beschikbaarheid en annuleringsvoorwaarden bij het boeken. Kitebagage (ca. €45-70 per tas per vlucht), eten en kitelessen zitten niet in de totaalprijs.</p>
+        <p>Foto's: Wikimedia Commons (licentie en auteur bij elke foto), kitesites en de verhuursites van de villa's. De foto's van verhuur- en kitesites zijn auteursrechtelijk beschermd en alleen bedoeld voor deze groep. Waar geen foto is, staat een illustratie.</p>
+      </footer>
+    </main>
+  </div>
+</div>
+
+<div class="overlay" id="ov" hidden>
+  <div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title"></div>
+</div>
+
+<script>
+const CRIT=[
+ {k:"wind",label:"Windzekerheid",w:20},
+ {k:"dist",label:"Afstand goede kitespot",w:10},
+ {k:"waves",label:"Golfrijden met de kite",w:8},
+ {k:"pool",label:"Zwembad",w:7},
+ {k:"rest",label:"Leuke restaurants",w:8},
+ {k:"cancel",label:"Villa gratis annuleren",w:7},
+ {k:"price",label:"Totaalprijs",w:12},
+ {k:"villa",label:"Hoe tof is de villa",w:8},
+ {k:"spot",label:"Hoe tof is de kitespot",w:10},
+ {k:"levels",label:"Beginners én gevorderden",w:10}
+];
+const KOL={bed:"7+ slaapkamers",flight:"Direct ≤6u op do",spot:"Spot ≤30 min",budget:"≤ €1.000 p.p."};
+
+const SPOTS=[
+{id:"essaouira",name:"Essaouira",country:"Marokko",region:"Atlantische kust, via Marrakech",
+ pal:{sky1:"#f6d7a7",sky2:"#9fc7d8",sea:"#2f6f8f",sand:"#e8cf9f",extra:"medina"},
+ windPct:81,avgKn:19,dir:"N-NNO",dirDeg:15,air:22,water:18,wetsuit:"3/2 fullsuit (koud Atlantisch water)",
+ wavesOk:true,drive:15,single:true,
+ s:{wind:9,waves:9,pool:9,rest:8,cancel:5,villa:7,spot:8,levels:7.5},
+ cost:{flight:320,villa:444,car:100},
+ ko:{bed:["ok","Meerdere echte villa's met 7 slaapkamers"],flight:["ok","Transavia/easyJet AMS-RAK (bijna) dagelijks, 3u50"],spot:["ok","Hoofdstrand 15 min vanaf Ghazoua"],budget:["ok","~€865 p.p. met Dar Algajola"]},
+ tagline:"Windzekerste Atlantische spot van Noord-Afrika, met golven op 30 minuten",
+ desc:"Essaouira is 'de winderige stad' van Marokko: in juni kun je bijna elke dag het water op, met een stevige noordenwind die 's middags door de thermiek nog aantrekt. De brede baai onder de witte medina is ideaal om te leren. Gevorderden rijden naar de golven van Moulay Bouzerktoun of naar het surfdorp Sidi Kaouki. Het water is fris (±18 °C), maar na de sessie wachten muntthee, verse vis uit de haven en een zwembad bij de villa.",
+ spots:[
+  {n:"Essaouira main beach",t:"chop",l:"alle niveaus",m:15,x:"4 km lange baai met breed zandstrand, cross- tot onshore. VDWS-scholen met reddingsboot. Niet bij de stad kiten (vlagerig, rotsen)."},
+  {n:"Lagune Diabat (zuideinde)",t:"vlak",l:"beginners",m:15,x:"Klein flatwaterstuk bij de riviermonding; diepte wisselt met getij."},
+  {n:"Sidi Kaouki",t:"mix",l:"alle niveaus",m:25,x:"Lang, rustig zandstrand met relaxt surfdorpje. Golven afhankelijk van de swell."},
+  {n:"Moulay Bouzerktoun",t:"golven",l:"gevorderd",m:30,x:"Bekende wave-spot. Rotsbodem en stroming. In juni kleinere swell maar vaak 25+ kn."}],
+ waves:"Kleine tot middelgrote golven in de baai en Sidi Kaouki; echte waveriding bij Moulay Bouzerktoun.",
+ beg:"Groot zandstrand zonder stroming en veel scholen. Wel veel en soms harde wind (tot 35 kn): les met kleine kites is aan te raden.",
+ adv:"Veel kiteuren op zekere wind, bump-and-jump, downwinders en een van de beste wave-spots van Noord-Afrika.",
+ flights:[
+  {a:"Transavia",r:"AMS-RAK",d:"Bijna dagelijks (±13x/week)",th:"ok",t:"3u50",p:300,n:"Zomer 2027 is al te boeken. Kitebag ±€50-70 per vlucht."},
+  {a:"easyJet",r:"AMS-RAK",d:"±6x/week",th:"grens",t:"3u50",p:300,n:"Donderdag in juni 2027 nog checken."},
+  {a:"Ryanair",r:"NRN (Weeze)-ESU",d:"Vooral winter",th:"nee",t:"3u45",p:200,n:"Enige directe vlucht naar Essaouira zelf, vanuit Duitsland."}],
+ transferNote:"Marrakech-Essaouira is 2,5-3 uur rijden. Reken op een privé-minibus heen en terug.",
+ villas:[
+  {n:"Dar Algajola",u:"https://www.airbnb.com/rooms/969314980994793796",loc:"El Ghazoua, 8 km van de medina",bd:7,ba:6,sl:14,pool:"Privé",m:15,p:4000,c:"onbekend",cn:"Beleid zichtbaar na datumkeuze. Prijs geschat (±€575/nacht).",cool:7,d:"Ruim, stijlvol familiehuis voor sportieve groepen, 5.0 sterren. Eigen keuken, dus zelf koken kan.",pick:true},
+  {n:"Riad Dharma",u:"https://www.villanovo.com/villa-rentals/africa/morocco/essaouira/outside-essaouira/riad-dharma",loc:"Heuvel op het platteland, 20 min van Essaouira",bd:7,ba:7,sl:14,pool:"Privé, verwarmbaar, jacuzzi",m:20,p:5260,c:"nee",cn:"30% aanbetaling niet terugbetaalbaar; >35 dagen vooraf 50%, daarna 100%.",cool:8,d:"Luxe riad met 7 en-suite kamers, tennisbaan, hammam en eigen kok. Dagelijkse schoonmaak inbegrepen. Met deze villa ±€1.005 p.p."},
+  {n:"Dar Mamoune",u:"https://www.vrbo.com/en-sg/p8845019",loc:"Arganbos, ±20 min van Essaouira",bd:7,ba:6,sl:14,pool:"Privé",m:20,p:5000,c:"onbekend",cn:"Prijs op Vrbo onduidelijk, checken met datums.",cool:7,d:"Groot huis (700 m²) in het arganbos met personeel, biljart, bbq en grote tuin."}],
+ car:{setup:"Privé-minibus RAK-villa v.v. (±€350) + 2 huurauto's ter plekke (Dacia Jogger/Duster)",tot:900},
+ rest:[["La Table by Madada","Fine dining, vis"],["Taros","Rooftop met havenzicht, cocktails, livemuziek"],["Adwak","Traditionele tajines in de medina"],["Beach and Friends","Strandbar aan het kitestrand"],["Visgrills bij de haven","Kies je vis, ter plekke gegrild"]],
+ pros:["Zeer windzeker in juni (±80% kitebare dagen)","Beginnersstrand én echte golfspots","Veel directe vluchten AMS-Marrakech","Sfeervolle UNESCO-medina, goed eten, betaalbaar","Luxe villa's met 7 slaapkamers binnen budget"],
+ cons:["2,5-3 u transfer vanaf Marrakech","Koud water (±18 °C), fullsuit nodig","Wind kan hard en vlagerig zijn (tot 35-40 kn)","Strenge annuleringsvoorwaarden bij agencies als Villanovo"],
+ photos:[["TheKiteSpot: Essaouira Bay","https://locations.thekitespot.com/locations/kitesurf-essaouira-bay-morocco"],["IKSURFMAG spotgids","https://www.iksurfmag.com/travel-guides/africa/morocco/essaouira/"]],
+ src:["https://locations.thekitespot.com/locations/kitesurf-essaouira-bay-morocco","https://www.windfinder.com/windstatistics/essaouira","https://news.transavia.com/en/transavia-opens-sales-summer-2027/","https://www.villanovo.com/villa-rentals/africa/morocco/essaouira/for:12-persons"]},
+
+{id:"alacati",name:"Alaçatı",country:"Turkije",region:"Çeşme-schiereiland, Izmir",
+ pal:{sky1:"#bfe3f2",sky2:"#6fb6d9",sea:"#1aa3b0",sand:"#efe3c6",extra:"windmill"},
+ windPct:65,avgKn:17,dir:"N-NNO (Meltemi)",dirDeg:10,air:29,water:21,wetsuit:"3/2 shorty (fris door upwelling)",
+ wavesOk:false,drive:10,single:true,
+ s:{wind:7.5,waves:1,pool:10,rest:9,cancel:5,villa:8,spot:8,levels:9},
+ cost:{flight:350,villa:500,car:144},
+ ko:{bed:["ok","Villa Sunset en Alashato hebben 7 slaapkamers"],flight:["ok","SunExpress AMS-ADB op do heen en terug, 3u25"],spot:["ok","Kitebaai 10-15 min"],budget:["grens","~€995 p.p. met Villa Sunset; met Alashato ~€1.075"]},
+ tagline:"Spiegelglad water, stevige Meltemi en het leukste dorp van de lijst",
+ desc:"Alaçatı is het wind-mekka van Turkije: een V-vormige baai waar de Meltemi met een extra jet-effect doorheen raast, terwijl het water spiegelglad blijft. Beginners staan honderden meters ver in heupdiep water, gevorderden knallen 's middags met 20+ knopen over flat water. Wil je meer ruimte, dan rijd je naar Pırlanta Beach met wit zand en uitzicht op Chios. Na het kiten wacht het stenen dorp Alaçatı met boetiekjes, cocktailbars en visrestaurants.",
+ spots:[
+  {n:"Alaçatı Bay, Kite Beach",t:"vlak",l:"alle niveaus",m:10,x:"Officiële kitezone, sideshore van links, tot 500 m staangebied. Zee-egels upwind, druk met cursisten."},
+  {n:"Pırlanta Beach",t:"chop",l:"alle niveaus",m:25,x:"Aangewezen kitestrand met wit zand en zandbank. Cross-onshore, IKO-scholen, rustiger en ongerept."},
+  {n:"Ilıca",t:"chop",l:"gevorderd",m:15,x:"Druk zwemstrand, in de zomer geen hoofdspot."}],
+ waves:"In juni ligt de baai in de luwte: vlak water, geen golven. Hooguit chop in Pırlanta.",
+ beg:"Uitstekend: groot staand ondiep gebied, vlak water, veel IKO-scholen en rescue. Neem waterschoentjes mee.",
+ adv:"Top voor freestyle en speed op vlak water met vaak 20+ kn in de middag. Geen golven.",
+ flights:[
+  {a:"SunExpress",r:"AMS-ADB",d:"Zomer 2026: di, do-zo; vanaf juli dagelijks",th:"ok",t:"3u25 / 3u45",p:350,n:"Heen do 20:45, landt vr 01:10. Terug do 17:00-19:45. Bagage ±€50-80 retour extra."},
+  {a:"TUI fly",r:"AMS-ADB",d:"2x/week",th:"grens",t:"3u40",p:400,n:"Dagen niet bevestigd."},
+  {a:"Corendon",r:"AMS-ADB",d:"Terug wo en zo",th:"nee",t:"3u45",p:350,n:"Past niet in do-do."}],
+ transferNote:"Izmir Airport-Alaçatı is ±1 uur over de tolweg.",
+ villas:[
+  {n:"Villa Sunset Çeşme",u:"https://www.airbnb.com/rooms/1644088740324430528",loc:"Ovacık, Çeşme",bd:7,ba:8,sl:12,pool:"Infinity-style 12x5 m",m:15,p:4500,c:"onbekend",cn:"Nieuwe listing (5,0). Prijs geschat ±€625/nacht.",cool:8,d:"Nieuwe luxe villa met 7 slaapkamers, 2 woonkamers en infinity-pool met zonsondergang, dicht bij Pırlanta.",pick:true},
+  {n:"ALASHATO Villa Luxurious",u:"https://www.airbnb.com/rooms/6652955",loc:"Alaçatı",bd:7,ba:7,sl:16,pool:"Privé + hot tub, dakterras",m:10,p:5500,c:"onbekend",cn:"Beleid zichtbaar na datumkeuze. Prijs geschat ±€775/nacht.",cool:9,d:"Superhost-villa (4,98 uit 81 reviews) op korte afstand van het dorp en de kitebaai."},
+  {n:"Luxe villa VL-37615",u:"https://www.tatilsepeti.com/cesmede-kalabalik-aileler-icin-uygun-ozel-havuzlu-luks-villa-vl-37615",loc:"Çeşme",bd:6,ba:5,sl:12,pool:"12x5 m",m:20,p:3500,c:"nee",cn:"≥60 dagen vooraf 40% inhouding, daarna 100%.",cool:6,d:"Budgetoptie van 450 m², maar 6 slaapkamers en ±5 km van zee.",flag:"Slechts 6 slaapkamers"}],
+ car:{setup:"1x 9-persoons bus + 1x stationwagen bij ADB",tot:1300},
+ rest:[["Asma Yaprağı","Egeïsche huiskeuken en meze, reserveren"],["Ferdi Baba","Vis en rakı aan de haven"],["Agrilia","Mediterraan in een oude stenen fabriek"],["Babylon Aya Yorgi","Beachclub in Çeşme"],["Kemalpaşa Caddesi","Cocktailbars en terrassen tot laat"]],
+ pros:["Spiegelvlak water: ideaal voor beginners én freestyle","Stabiele Meltemi vanaf half juni","Directe donderdagvlucht, 3,5 uur","Twee topspots binnen 10-25 min","Alaçatı-dorp: beste restaurants en sfeer van deze lijst"],
+ cons:["Budget net aan (~€1.000 p.p.)","Geen golven in juni","Heenvlucht landt vrijdag 01:10","Water fris door upwelling","Tweede helft juni is begin van het Meltemi-seizoen"],
+ photos:[["Pırlanta Beach spotgids","https://web.kite-and-windsurfing-guide.com/spots/kiteboarding-windsurfing-sup/pirlanta-beach-turkish-aegean-sea-turkey.html"],["Surf-Magazin: Alaçatı","https://www.surf-magazin.de/en/spots-and-areas/international/other-europe/spot-guide-turkey-alacati-freeride-paradise-in-transition/"]],
+ src:["https://www.cesme.bel.tr/surf-centers-en","https://info.flightmapper.net/route/SunExpress_XQ_AMS_ADB","https://info.flightmapper.net/route/SunExpress_XQ_ADB_AMS","https://www.nz.kayak.com/Izmir-9-Passenger-Van-Hire.6706.9-lcv.ksp"]},
+
+{id:"elgouna",name:"El Gouna",country:"Egypte",region:"Rode Zee, bij Hurghada",
+ pal:{sky1:"#fbe3b5",sky2:"#8fd0e6",sea:"#12b5b8",sand:"#f1dcaa",extra:"palm"},
+ windPct:80,avgKn:17,dir:"NNW (sideshore)",dirDeg:340,air:34,water:26,wetsuit:"Geen; hooguit lycra of neopreen top",
+ wavesOk:false,drive:10,single:false,
+ s:{wind:9.5,waves:1.5,pool:9,rest:8,cancel:5,villa:7,spot:8,levels:9},
+ cost:{flight:475,villa:511,car:55},
+ ko:{bed:["nee","Geen villa met 7+ slaapkamers gevonden; 2 buurvilla's in Tawila (2x4)"],flight:["ok","Transavia, Corendon en easyJet op do, 5u30-5u55"],spot:["ok","Mangroovy 5-10 min"],budget:["grens","~€1.040 p.p. met 2 villa's; plus visum $25 en stationfee"]},
+ tagline:"Windzekerste plek van de lijst, warm water en butterflat lagunes",
+ desc:"El Gouna is een van de windzekerste kiteplekken ter wereld: in juni blaast de noordenwind bijna dagelijks sideshore over turquoise, spiegelglad lagunewater. Beginners staan tot hun middel in warm water op zandbodem, gevorderden vinden chop achter het rif of trainen freestyle in de lagunes. Na het kiten wacht een beachclub op Mangroovy, en 's avonds eet je in de jachthaven van Abu Tig.",
+ spots:[
+  {n:"Mangroovy Beach",t:"mix",l:"alle niveaus",m:10,x:"Groot, ondiep, vlak lagunewater met zandbodem; buiten het rif chop. Stationfee ±€100-150 p.p./week."},
+  {n:"El Gouna kite lagoons",t:"vlak",l:"alle niveaus",m:10,x:"Knie- tot heupdiep butterflat water, via kitecenters."},
+  {n:"Hurghada hotelstranden",t:"chop",l:"alle niveaus",m:30,x:"Uitwijkoptie, vaak met entreefee."},
+  {n:"Soma Bay / Safaga",t:"mix",l:"alle niveaus",m:75,x:"Dagtrip: vlakwaterlagune plus rif met chop."}],
+ waves:"Nauwelijks: hooguit windgolfjes buiten het rif.",
+ beg:"Uitstekend: groot, ondiep, warm vlak water met zandbodem, veel IKO-scholen met rescue-boten.",
+ adv:"Erg goed voor freestyle en speed; weinig uitdaging voor wave-kiters. Kitesafari's mogelijk.",
+ flights:[
+  {a:"Transavia",r:"AMS-HRG",d:"Do + 1 andere dag",th:"ok",t:"5u30-5u55",p:450,n:"Vertrek do 14:00. Kitebag ±€50-60 per richting."},
+  {a:"Corendon",r:"AMS-HRG",d:"3x/week incl. do",th:"ok",t:"5u30-5u55",p:475,n:"Vertrek do 10:25, vaak 20 kg inbegrepen."},
+  {a:"easyJet",r:"AMS-HRG",d:"2x/week incl. do",th:"ok",t:"5u30",p:430,n:"Vertrek do 07:05."}],
+ transferNote:"Airport-El Gouna 25-30 min. Auto huren is ongebruikelijk: privé-minibus met chauffeur en tuktuks.",
+ villas:[
+  {n:"2x villa Tawila (4 slpk elk)",u:"https://www.bayut.eg/en/property/details-503199862.html",loc:"Tawila, aan de lagune",bd:8,ba:8,sl:16,pool:"Privé per villa",m:10,p:4600,c:"onbekend",cn:"EGP 17.500/dag per villa; aanbetaling via makelaar.",cool:7,d:"Moderne vrijstaande villa's aan de lagune met eigen zwembad en bbq. Twee buurvilla's geven iedereen een eigen kamer.",pick:true,flag:"Twee villa's, niet één"},
+  {n:"Villa Romana, Hill Villas",u:"https://www.airbnb.co.uk/rooms/11293770",loc:"El Gouna, aan lagune en strand",bd:5,ba:5.5,sl:10,pool:"Privé, verwarmd",m:10,p:2600,c:"onbekend",cn:"Water en stroom apart contant.",cool:8,d:"Sfeervolle villa aan de lagune, 4,8 sterren (108 reviews). Te klein zonder kamers te delen.",flag:"Slechts 5 slaapkamers"},
+  {n:"Villa met privézwembad & jacuzzi",u:"https://uk.hotels.com/ho1028573792/villa-with-private-pool-and-jacuzzi-el-gouna-egypt",loc:"El Gouna, bij Sliders Cable Park",bd:6,ba:6,sl:12,pool:"Privé per unit + gedeeld",m:10,p:2500,c:"ja",cn:"Volledig restitueerbare tarieven beschikbaar.",cool:5,d:"Praktische groepsoptie, eerder een complex met units. Met 3 mensen die delen ~€830 p.p.",flag:"Slechts 6 slaapkamers"}],
+ car:{setup:"Minibus met chauffeur voor transfers + dagelijks naar de spot",tot:500},
+ rest:[["Pier 88","Italiaans op een pier in Abu Tig Marina"],["Tamr Henna","Egyptische mezze in downtown"],["Moods Beach Bar","Sundowners met je voeten in het zand"],["Buzzha Beach Club","Kiters-hangout op Mangroovy"]],
+ pros:["Windzekerste bestemming in juni (~80%)","Perfect ondiep vlak water voor beginners, butterflat voor freestyle","Warm water, geen wetsuit","Drie maatschappijen vliegen op donderdag","Spot op 5-10 min"],
+ cons:["Geen villa met 7+ slaapkamers: 2 villa's of kamers delen","Heet: 33-36 °C overdag","Visum en stationfees komen erbij","Geen golven","Vliegtijd dicht tegen de 6 uur"],
+ photos:[["Kitejungle: Mangroovy Beach","https://kitejungle.com/kite-places/egypt/el-gouna-mangroovy-beach"],["Webcam El Gouna","https://www.windfinder.com/webcams/el_gouna"]],
+ src:["https://www.windfinder.com/windstatistics/el_gouna","https://windy.app/forecast2/spot/4560395/El+Gouna/statistics","https://www.flightsfrom.com/AMS-HRG","https://www.bayut.eg/en/red-sea/6-bedroom-villas-for-rent-in-hurghada/"]},
+
+{id:"kos",name:"Kos",country:"Griekenland",region:"Dodekanesos",
+ pal:{sky1:"#d6ecf7",sky2:"#7ab8de",sea:"#1f86c2",sand:"#eadfc4",extra:"hills"},
+ windPct:60,avgKn:15,dir:"NW-NNW (Meltemi)",dirDeg:320,air:28,water:22,wetsuit:"Shorty of lycra",
+ wavesOk:true,drive:10,single:true,
+ s:{wind:6.5,waves:5,pool:10,rest:8,cancel:6,villa:9,spot:7,levels:8},
+ cost:{flight:380,villa:700,car:145},
+ ko:{bed:["ok","Horizon Villa, 7 slaapkamers (enige gevonden)"],flight:["ok","Transavia en TUI op do, 3u30-3u50"],spot:["ok","Psalidi 10 min, Marmari ±25 min"],budget:["nee","~€1.225 p.p."]},
+ tagline:"Compact eiland, veel spots dichtbij, Meltemi nog niet op volle kracht",
+ desc:"Kos is een compact Grieks eiland waar de Meltemi 's middags stevig door de zeestraat tussen Kos en Kalymnos blaast. Aan de noordkust liggen kilometers zandstrand bij Marmari, Tigaki en Mastichari: veilig, aan- en sideshore en ideaal om te leren. Gevorderden zoeken het jet-effect bij Psalidi of de golven bij Agios Theologos op.",
+ spots:[
+  {n:"Psalidi",t:"chop",l:"gevorderd",m:10,x:"Beste windstatistiek (jet-effect), rotsige instap en stroming."},
+  {n:"Marmari",t:"chop",l:"alle niveaus",m:25,x:"Lang zandstrand, schuin aanlandig, 's middags vaak 20+ kn."},
+  {n:"Mastichari",t:"mix",l:"alle niveaus",m:30,x:"Hoofdspot met oudste school, brede zandbaai."},
+  {n:"Kefalos",t:"vlak",l:"alle niveaus",m:45,x:"Vlak water maar aflandig, alleen met rescue."},
+  {n:"Agios Theologos",t:"golven",l:"gevorderd",m:50,x:"Golven tot ±2 m bij aanhoudende noord."}],
+ waves:"Golven bij Agios Theologos (dagtrip) en swell bij Psalidi bij harde Meltemi.",
+ beg:"Goed: zandstranden met aan- of sideshore wind en scholen met bootondersteuning.",
+ adv:"Stevige middagwind bij Marmari, jet-effect bij Psalidi, golfdagen bij Theologos.",
+ flights:[
+  {a:"Transavia",r:"AMS-KGS",d:"Dagelijks in de zomer",th:"ok",t:"3u30-3u50",p:380,n:"Do vroeg vertrek. Kitebag ±€45-60 per richting."},
+  {a:"TUI fly",r:"AMS-KGS",d:"ma, wo, do, vr, za, zo",th:"ok",t:"3u50",p:400,n:"Ruimbagage meestal inbegrepen."}],
+ transferNote:"Luchthaven-Psalidi ±30 min.",
+ villas:[
+  {n:"Horizon Villa",u:"https://www.expedia.com/Kos-Hotels-Horizon-Villa-Private-Pool-7-Bedroom-Gym-Sea-View.h113171716.Hotel-Information",loc:"Heuvels boven Psalidi",bd:7,ba:3.5,sl:13,pool:"Privé, grote tuin, gym",m:10,p:6300,c:"deels",cn:"Expedia heeft vaak restitueerbare en goedkopere niet-restitueerbare tarieven.",cool:9,d:"650 m² villa in boho-Scandinavische stijl met zeezicht en gym, vlak bij Kos-stad.",pick:true},
+  {n:"Xenos Villa 2 + buurvilla",u:"https://homes-and-villas.marriott.com/en/properties/40121711-tigkaki-xenos-villa-2-with-5-bedrooms-private-swimming-pool-near-the-sea-in-tigaki",loc:"Tigaki, 500 m van strand",bd:10,ba:7,sl:22,pool:"Elke villa eigen zwembad",m:5,p:5000,c:"onbekend",cn:"Twee losse villa's van 5 slaapkamers.",cool:7,d:"Beste uitvalsbasis voor Marmari (5 min) en Mastichari (15 min). ~€1.080 p.p.",flag:"Twee villa's, niet één"}],
+ car:{setup:"1x 9-zits bus + 1x compacte auto",tot:1300},
+ rest:[["H2O","Modern Grieks aan zee, Kos-stad"],["Elia","Meze en lokale wijn"],["Oromedon (Zia)","Bergtaverna met zonsondergang"],["Haihoutes Ghost Village","Kafeneio in een verlaten dorpje"]],
+ pros:["Donderdagvluchten met Transavia en TUI","Warm water, shorty volstaat","Veel spots dicht bij elkaar","Goede scholen voor beginners","Gezellig Kos-stad"],
+ cons:["Budget boven €1.000 p.p.","7-slaapkamervilla's zeldzaam","Meltemi eind juni nog niet op volle kracht","Beste beginnerstranden 25-30 min van de 7-kamervilla"],
+ photos:[["Kiteworldwide: Kos","https://kiteworldwide.com/kiteholidays/kitesurfing-in-greece-kos"],["Surf-Magazin: spots op Kos","https://www.surf-magazin.de/en/spots-and-areas/international/greece/kos-the-best-windsurfing-spots-on-the-greek-island/"]],
+ src:["https://www.flightsfrom.com/AMS-KGS","https://www.windfinder.com/windstatistics/kos","https://www.kayak.ie/Kos-9-Seater-Car-Hire.7696.9-lcv.ksp"]},
+
+{id:"tarifa",name:"Tarifa",country:"Spanje",region:"Costa de la Luz, Cádiz",
+ pal:{sky1:"#f3e2c3",sky2:"#95c1dc",sea:"#246f9e",sand:"#ecd6a6",extra:"dune"},
+ windPct:60,avgKn:15,dir:"Levante (O) / Poniente (W)",dirDeg:90,air:26,water:19,wetsuit:"3/2 fullsuit",
+ wavesOk:true,drive:20,single:true,
+ s:{wind:6.5,waves:6,pool:9,rest:8,cancel:5,villa:6,spot:9,levels:6.5},
+ cost:{flight:300,villa:667,car:161},
+ ko:{bed:["ok","Ruralidays CAD1451: 7 slpk (2 huizen samen verhuurd)"],flight:["ok","Dagelijks AMS-AGP, 2u55"],spot:["ok","Valdevaqueros/Bolonia ±20 min"],budget:["nee","~€1.130 p.p."]},
+ tagline:"Het kite-mekka van Europa, met Afrika aan de overkant",
+ desc:"Tarifa is hét kite-mekka van Europa: op het zuidelijkste puntje van Spanje wordt de wind door de Straat van Gibraltar geperst en kijk je vanaf het water op Marokko. Valdevaqueros onder de enorme zandduin en de baai van Bolonia met Romeinse ruïnes zijn plaatjes. Bij harde Levante gaan gevorderden los met big air, bij Poniente is er ruimte voor lessen en golfjes.",
+ spots:[
+  {n:"Valdevaqueros",t:"chop",l:"gemiddeld+",m:15,x:"3 km strand onder de duin, erg druk. Bij Levante off/cross-off."},
+  {n:"Los Lances Noord",t:"chop",l:"alle niveaus",m:20,x:"Grote zomerkitezones met boeien, veel scholen."},
+  {n:"Bolonia",t:"golven",l:"gevorderd",m:25,x:"Baai met duin; bij Poniente kleine swell, minder druk."},
+  {n:"Balneario",t:"chop",l:"gevorderd",m:20,x:"Levante-prospot, in de zomer grotendeels dicht."}],
+ waves:"Vooral bij Poniente in Bolonia. Geen grote golven.",
+ beg:"Veel scholen, maar in de zomer kleine drukke zones en bij harde Levante (30+ kn offshore) ongeschikt.",
+ adv:"Big air bij Levante, golfjes in Bolonia, levendige scene en downwinders.",
+ flights:[
+  {a:"Transavia",r:"AMS-AGP",d:"Dagelijks, meerdere per dag",th:"ok",t:"2u55",p:260,n:"Kitebag ±€50-70 per richting."},
+  {a:"KLM",r:"AMS-AGP",d:"Dagelijks",th:"ok",t:"2u55",p:300,n:"Light zonder ruimbagage."},
+  {a:"Vueling",r:"AMS-AGP",d:"Dagelijks",th:"ok",t:"2u55",p:240,n:"Bagage apart."}],
+ transferNote:"Málaga-Tarifa is 1u30-1u45 rijden.",
+ villas:[
+  {n:"Twee huizen bij Tarifa (CAD1451)",u:"https://www.ruralidays.co.uk/holiday-homes/CAD1451/",loc:"Platteland, 6 km van strand",bd:7,ba:5,sl:14,pool:"2 privézwembaden",m:20,p:6000,c:"onbekend",cn:"Borg €800. Prijs eind juni geschat.",cool:6,d:"Twee losse huizen samen verhuurd, elk met zwembad. Rustig, ±20 min naar Valdevaqueros en Bolonia.",pick:true,flag:"Twee huizen op één terrein"},
+  {n:"Villa rústica La Peña",u:"https://www.airbnb.com/rooms/7463533",loc:"Tussen Los Lances en Valdevaqueros",bd:5,ba:4,sl:10,pool:"Ja (jun-okt)",m:5,p:4500,c:"onbekend",cn:"Min. 7 nachten in de zomer.",cool:8,d:"Rustieke villa direct aan het strand bij de spots. Superhost, 5,0.",flag:"Slechts 5 slaapkamers"},
+  {n:"Villa TheCUBE",u:"https://www.expedia.com/cn/Tarifa-Hotels-Villa-TheCUBE-With-Sea-Views.h118152059.Hotel-Information",loc:"Atlanterra, Zahara",bd:7,ba:8,sl:14,pool:"Privé",m:21,p:20000,c:"onbekend",cn:"Luxesegment, ver boven budget.",cool:9,d:"Spectaculaire moderne villa met zeezicht, alleen Bolonia binnen 30 min.",flag:"Ver boven budget"}],
+ car:{setup:"2x 7-persoons bij AGP",tot:1450},
+ rest:[["Tumbao","Chiringuito aan Valdevaqueros"],["La Cabaña (Bolonia)","Strandbar bij de kitezone"],["Café Azul","Ontbijt voor kiters"],["El Lola","Tapas in het oude centrum"],["Hurricane Hotel","Klassieke kitersplek aan zee"]],
+ pros:["Iconische kitebestemming met grote scene","Bijna altijd een windoptie","Afwisseling chop, vlak en golfjes","Kort en dagelijks vliegen"],
+ cons:["Budget ~€130 p.p. te hoog","7-slaapkamervilla's schaars","Zomerrestricties en drukte","Harde offshore Levante lastig voor beginners","Koel water, 1u45 rijden vanaf Málaga"],
+ photos:[["Kiter op Los Lances (Wikimedia)","https://commons.wikimedia.org/wiki/File:Tarifa_playa_los_lances_strapless_kiter-4413.jpg"],["Andalucia.com: kitezones","https://andalucia.com/tarifa/kitesurf/practice-areas"]],
+ src:["https://locations.thekitespot.com/locations/kitesurf-tarifa-spain","https://andalucia.com/tarifa/kitesurf/practice-areas","https://www.windfinder.com/windstatistics/tarifa"]},
+
+{id:"fuerteventura",name:"Fuerteventura Noord",country:"Spanje",region:"Lajares, El Cotillo en Corralejo",
+ pal:{sky1:"#e3f1f7",sky2:"#8cc6e3",sea:"#18a9c4",sand:"#e6d3ab",extra:"hills"},
+ windPct:65,avgKn:15,dir:"N-NNO (passaat)",dirDeg:10,air:24,water:20,wetsuit:"3/2 shorty of fullsuit",
+ wavesOk:true,drive:15,single:true,
+ s:{wind:7,waves:5,pool:10,rest:8,cancel:5,villa:8,spot:8,levels:8},
+ cost:{flight:380,villa:328,car:95},
+ ko:{bed:["ok","Volcano Retreat: 7 slaapkamers, 5,5 badkamers, 14-15 personen"],flight:["ok","Transavia (di/do/zo) en easyJet (do/zo) vliegen do heen en terug, ±4u40"],spot:["ok","El Cotillo 10 min, Flag Beach 15 min"],budget:["ok","~€805 p.p. met Volcano Retreat (€2.951/week)"]},
+ tagline:"Surfdorp Lajares, Flag Beach voor beginners en Cotillo-lagunes voor freestyle",
+ desc:"Het noorden van Fuerteventura is een rauwe vulkanische surfregio met Lajares als relaxte basis. Flag Beach bij Corralejo heeft een grote kitezone met uitzicht op Lobos en Lanzarote en is in de zomer vriendelijk voor beginners. Gevorderden rijden naar de turquoise lagunes van El Cotillo of de North Shore. Voor de hardste wind is Sotavento in het zuiden een dagtrip.",
+ spots:[
+  {n:"Flag Beach (Corralejo)",t:"chop",l:"alle niveaus",m:15,x:"3 km kitezone met veel scholen. Beste bij N-NW; bij laag water komen rotsen boven, dus rijden rond half/hoog tij."},
+  {n:"El Cotillo Lagos",t:"vlak",l:"gevorderd",m:10,x:"Vlakwaterlagunes voor freestyle bij N/NO en half/hoog tij. Rotsen rondom."},
+  {n:"Majanicho (North Shore)",t:"golven",l:"gevorderd",m:15,x:"Rifspot via onverharde weg; in de zomer meestal alleen windswell."},
+  {n:"Sotavento",t:"mix",l:"alle niveaus",m:75,x:"Lagune met de sterkste zomerwind van het eiland. Dagtrip."}],
+ waves:"In de zomer kleine deining: soms windswell op de North Shore en bij El Cotillo, echte golven vooral in de winter.",
+ beg:"Flag Beach is in de zomer prima: zandstrand, vlakker water, veel scholen in Corralejo. Les rond half/hoog tij.",
+ adv:"Freestyle in de Cotillo-lagunes, rifspots bij swell en een dagtrip naar Sotavento. Noordenwind is wel wat zwakker dan in het zuiden.",
+ flights:[
+  {a:"Transavia",r:"AMS-FUE",d:"di, do, zo",th:"ok",t:"4u35-4u50",p:380,n:"Heen do 14:45, terug do 19:15 (landt 00:15). Zomer 2027 nog bevestigen."},
+  {a:"easyJet",r:"AMS-FUE",d:"do, zo",th:"ok",t:"4u35-4u50",p:360,n:"Heen do 08:00, terug do 12:15. Schema gezien voor okt 2026."},
+  {a:"TUI fly",r:"AMS-FUE",d:"di, vr",th:"nee",t:"4u50",p:400,n:"Geen donderdag."}],
+ transferNote:"Luchthaven-Lajares ±45 min.",
+ villas:[
+  {n:"Volcano Retreat",u:"https://www.airbnb.nl/rooms/12284029",loc:"Lajares, aan de voet van de vulkaan",bd:7,ba:5.5,sl:15,pool:"Privé, verwarmd (20-27 °C)",m:10,p:2951,c:"onbekend",cn:"€2.951 voor de week volgens Airbnb (opgezocht voor za 19 t/m za 26 juni). Controleer de prijs voor do 17 t/m do 24 juni en het annuleringsbeleid in de boekingsflow.",cool:8,d:"Moderne villa van 400 m² op een omheind terrein van 4.000 m², met 5 studio-units, 4 kitchenettes en 1 volledige keuken: veel privacy voor de groep. 4,89 sterren, Superhost. Het dorp met restaurants ligt vlakbij.",pick:true},
+  {n:"Villa Lajares (simplyowners)",u:"https://www.simplyowners.net/spain/fuerteventura/lajares/p/52977/",loc:"Lajares",bd:5,ba:0,sl:10,pool:"Verwarmd + hottub",m:12,p:2050,c:"onbekend",cn:"Direct bij de eigenaar.",cool:6,d:"Veel goedkoper (±€2.050/week), 5 sterren uit 60 reviews, maar krap voor 9 personen.",flag:"Slechts 5 slaapkamers"},
+  {n:"Villa Isabel II + III (zuid)",u:"https://www.booking.com/hotel/es/villa-isabel-ii.es.html",loc:"Costa Calma (zuid, bij Sotavento)",bd:6,ba:4,sl:14,pool:"2x privé",m:10,p:4600,c:"onbekend",cn:"Zuidvariant.",cool:6,d:"Twee villa's naast elkaar in het zuiden, op 10 min van Sotavento. ~€955 p.p., maar geen donderdag-probleem meer.",flag:"Twee villa's, 6 slaapkamers totaal"}],
+ car:{setup:"2 huurauto's (Cicar/AutoReisen, all-risk)",tot:850},
+ rest:[["El Patio de Lajares","Fine dining in Lajares"],["Canela Café","Ontbijt en koffie voor surfers"],["La Vaca Azul (El Cotillo)","Vis aan de oude haven, zonsondergang"],["El Goloso (El Cotillo)","Bakkerij voor het groepsontbijt"],["Waikiki Beach Club","Avondje uit in Corralejo"]],
+ pros:["Ruim binnen budget (~€805 p.p.)","Donderdagvluchten heen en terug (Transavia, easyJet)","Toffe villa met veel privacy en verwarmd zwembad","Lajares is een sfeervol surfdorp","Beginnersspot, lagunes en rifspots binnen 15 min"],
+ cons:["Zomerwind in het noorden zwakker dan bij Sotavento","Rotsen bij laag tij","Weinig golven in de zomer, wetsuit nodig"],
+ photos:[["Flag Beach (fuerteventuraplayas)","https://www.fuerteventuraplayas.com/en/spot/flag-beach-kite-beach/"],["Cotillo Lagos","https://www.fuerteventuraplayas.com/en/spot/cotillo-lagos/"]],
+ src:["https://www.flightsfrom.com/AMS-FUE","https://www.flightsfrom.com/FUE-AMS","https://kitejungle.com/kite-places/spain/flag-beach","https://www.airbnb.nl/rooms/12284029"]},
+
+
+{id:"rhodes",name:"Rhodos",country:"Griekenland",region:"Westkust (Theologos) + Prasonisi",
+ pal:{sky1:"#dcecf5",sky2:"#83bde0",sea:"#1b7fb8",sand:"#e6d9bb",extra:"hills"},
+ windPct:65,avgKn:15,dir:"NW (Meltemi)",dirDeg:315,air:28,water:23,wetsuit:"Shorty of lycra",
+ wavesOk:true,drive:20,single:true,
+ s:{wind:7,waves:5,pool:10,rest:7,cancel:5,villa:7,spot:7,levels:8},
+ cost:{flight:380,villa:700,car:155},
+ ko:{bed:["ok","Vento Estivo Mansion, 7 slaapkamers"],flight:["ok","Transavia AMS-RHO had do-vlucht in 2026, 3u40"],spot:["ok","Theologos ±20 min; Prasonisi 1u20"],budget:["nee","~€1.235 p.p."]},
+ tagline:"Betrouwbare spot bij de luchthaven, met Prasonisi als dagtrip",
+ desc:"Rhodos combineert een relaxte Meltemi-spot vlak bij de luchthaven met een van de gaafste spots van de Middellandse Zee in het zuiden. In Theologos kiten beginners en gevorderden op een breed strand. Voor de kick rij je een dag naar Prasonisi: een zandtong met aan de ene kant spiegelglad water en aan de andere kant golven.",
+ spots:[
+  {n:"Theologos / Paradisi",t:"chop",l:"alle niveaus",m:20,x:"Side- tot side-onshore, breed strand, niet druk."},
+  {n:"Kremasti / Ixia",t:"chop",l:"gevorderd",m:15,x:"Kiezelstranden, back-up."},
+  {n:"Prasonisi",t:"mix",l:"alle niveaus",m:80,x:"Flatwater én golven op één zandtong, 20-30 kn door venturi. Dagtrip."}],
+ waves:"Echte golven aan de westkant van Prasonisi (dagtrip).",
+ beg:"Theologos is goed voor beginners: side-onshore, breed strand, scholen.",
+ adv:"Het echte feest is Prasonisi: plan 1-2 dagtrips.",
+ flights:[
+  {a:"Transavia",r:"AMS-RHO",d:"Zomer 2026 o.a. di/do/zo",th:"ok",t:"3u40",p:380,n:"Exacte donderdagen 2027 nog checken."},
+  {a:"Transavia",r:"EIN-RHO",d:"Uitgeweken naar Weeze/Maastricht",th:"nee",t:"3u30",p:0,n:"Eindhoven dicht 1 feb-18 jul 2027."}],
+ transferNote:"Villa ligt 15 min van de luchthaven.",
+ villas:[
+  {n:"Vento Estivo Mansion",u:"https://www.clickstay.com/p/495044",loc:"Maritsa (Pastida)",bd:7,ba:5,sl:16,pool:"Privé met glijbaan en waterval",m:20,p:6300,c:"deels",cn:"Kosten afhankelijk van moment van annuleren.",cool:7,d:"Ruime villa met 3 woonkamers, 2 keukens en 6 parkeerplekken. Expedia-score 9,8.",pick:true},
+  {n:"Villa Seven (Lachania)",u:"https://www.myprivatevillas.com/luxury/europe/greece/dodecanese-islands/rhodes/villa-seven/",loc:"Zuidoostkust, aan het strand",bd:7,ba:7,sl:14,pool:"Infinity met zeezicht",m:30,p:11095,c:"onbekend",cn:"Prijs juni 2026.",cool:9,d:"Luxe strandvilla, de enige 7-kamer-optie bij Prasonisi. ~€1.770 p.p.",flag:"Ver boven budget"}],
+ car:{setup:"2x 7-zitter bij RHO",tot:1400},
+ rest:[["Kerasma","Modern Grieks, oude stad"],["Nireas","Vis en meze, oude stad"],["Tavernes Maritsa","Traditioneel dorpsplein"],["Tavernes Prasonisi","Lunch op de dagtrip"]],
+ pros:["Korte directe vlucht","Warm water","Theologos 20 min en beginnersvriendelijk","Prasonisi is wereldklasse"],
+ cons:["Budget ~€235 p.p. te hoog","Prasonisi ver van de villa","Theologos vooral chop"],
+ photos:[["Kiteworldwide: Rhodos","https://kiteworldwide.com/kiteholidays/greece-rhodes/"],["Prasonisi spotinfo","https://www.prasonisi.com/index.php/spot.html"]],
+ src:["https://info.flightmapper.net/route/Transavia_HV_AMS_RHO","https://www.transavia.com/informatie/nl-nl/sluiting-eindhoven-airport","https://www.clickstay.com/p/495044"]},
+
+{id:"stagnone",name:"Lo Stagnone",country:"Italië",region:"Marsala, West-Sicilië",
+ pal:{sky1:"#f8e0c2",sky2:"#a8cfe0",sea:"#3fb7b3",sand:"#efe0bf",extra:"windmill"},
+ windPct:45,avgKn:12,dir:"NW (mistral + thermiek)",dirDeg:315,air:28,water:23,wetsuit:"Shorty + booties",
+ wavesOk:false,drive:20,single:true,
+ s:{wind:4.5,waves:2,pool:8,rest:8,cancel:5,villa:6,spot:8,levels:7},
+ cost:{flight:320,villa:556,car:111},
+ ko:{bed:["ok","Casale Dom 16 en Villa Marettimo hebben 7 slaapkamers"],flight:["grens","Transavia AMS-PMO 1x/week (do?), zomergat in schema; EIN dicht"],spot:["ok","Lagune 15-25 min"],budget:["grens","~€990 p.p. met Casale Dom 16 (prijs geschat)"]},
+ tagline:"Europa's mooiste vlakwaterlagune, maar juniwind wisselvallig",
+ desc:"Lo Stagnone is de grootste ondiepe lagune van Europa: zeven kilometer turquoise, kniediep water tussen zoutpannen, windmolens en het eilandje Mozia. Het water is zo glad dat freestylers er hun beste trucs landen en beginners overal kunnen staan. In juni kan de wind wisselvallig zijn, dus neem een grote kite of foil mee.",
+ spots:[
+  {n:"Stagnone Noord (Birgi)",t:"vlak",l:"alle niveaus",m:20,x:"Knie- tot heupdiep, veel scholen, drukste deel."},
+  {n:"Stagnone Zuid (Mozia)",t:"vlak",l:"alle niveaus",m:15,x:"Meer ruimte, modderige bodem, booties."},
+  {n:"Capo Feto",t:"mix",l:"gevorderd",m:40,x:"Open zee met chop en golven bij Z/W."}],
+ waves:"Niet op de lagune. Kleine golven bij Capo Feto of San Vito (buiten 30 min).",
+ beg:"Top: overal staan, geen stroming, tientallen scholen.",
+ adv:"Freestyle-paradijs, maar bij lichte thermiek is foil de redding.",
+ flights:[
+  {a:"Transavia",r:"AMS-PMO",d:"1x/week sinds 2 apr 2026 (een donderdag)",th:"grens",t:"2u50",p:300,n:"A321neo tijdelijk niet ingezet 19 jun-26 aug 2026. Palermo ligt 1u15 van de spot."},
+  {a:"Ryanair",r:"EIN-PMO",d:"do, za",th:"nee",t:"2u45",p:260,n:"Eindhoven dicht 1 feb-18 jul 2027."}],
+ transferNote:"Palermo-Marsala 1u15; Trapani (20 min) heeft geen NL-verbinding.",
+ villas:[
+  {n:"Casale Dom 16",u:"https://in.hotels.com/ho2400332768/tp-e974-ciav0at-casale-dom-16-marsala-italy",loc:"Platteland Marsala",bd:7,ba:6,sl:16,pool:"Privé",m:20,p:5000,c:"onbekend",cn:"Prijs geschat €4.000-6.000.",cool:6,d:"Ruim Siciliaans casale tussen de wijngaarden met zwembad en grote eettafel.",pick:true},
+  {n:"Villa Marettimo",u:"https://oliverstravels.com/italy/sicily/villa-marettimo",loc:"Paceco",bd:7,ba:7,sl:14,pool:"6x12 m met zeezicht",m:25,p:7000,c:"onbekend",cn:"Borg €500, min. 7 nachten.",cool:8,d:"Moderne gelijkvloerse villa met pizzaoven en uitzicht op de Egadische eilanden. ~€1.200 p.p."}],
+ car:{setup:"1x 9-persoons bus + 1x stationwagen",tot:1000},
+ rest:[["Le Lumie","Verfijnde vis, Gambero Rosso-pick"],["Assud Mozia","Pizza bij de pier naar Mozia"],["Al Molo","Aperitivo met sunset over de lagune"],["La Pêche à Marsala","Wijnbar"]],
+ pros:["Beste vlakwater van Europa","Veilig voor de hele groep","Warm water","Mooie vibe en eten"],
+ cons:["Juniwind wisselvallig (~45% ≥15 kn)","Vluchten onzeker door EIN-sluiting","Golfspots buiten 30 min","Modderige bodem, drukte"],
+ photos:[["KBC Sicily: Lo Stagnone","https://www.kiteboarding-club.com/en/kitesurfing-on-the-island-sicily-lo-stagnone"],["TheKiteSpot","https://locations.thekitespot.com/locations/kitesurf-marsala-lo-stagnone-sicily-italy"]],
+ src:["https://kitejungle.com/kite-places/italy/stagnone","https://www.aeroroutes.com/eng/260211-hvns2632q","https://www.transavia.com/informatie/nl-nl/sluiting-eindhoven-airport"]},
+
+{id:"lisbon",name:"Guincho",country:"Portugal",region:"Kust van Lissabon (Sintra/Cascais)",
+ pal:{sky1:"#e2ebef",sky2:"#9cc0d4",sea:"#2a6d8c",sand:"#dcc9a3",extra:"cliff"},
+ windPct:65,avgKn:16,dir:"N-NNW (Nortada)",dirDeg:350,air:24,water:17,wetsuit:"4/3 fullsuit",
+ wavesOk:true,drive:20,single:true,
+ s:{wind:7,waves:8,pool:9,rest:9,cancel:5,villa:7,spot:8,levels:4},
+ cost:{flight:290,villa:889,car:167},
+ ko:{bed:["ok","Villa Branca 7 slpk, Villa Sisi 8 slpk"],flight:["ok","Dagelijks AMS-LIS, 2u55"],spot:["ok","Guincho 20 min (alleen gevorderden)"],budget:["nee","~€1.350 p.p."]},
+ tagline:"Wilde golvenspot voor gevorderden, beginners moeten ver rijden",
+ desc:"Guincho is een wild, breed strand tussen de kliffen van het Sintra-natuurpark, waar de Nortada op zonnige zomermiddagen 15 tot 25 knopen blaast. Je rijdt in chop en golven met uitzicht op Cabo da Roca en eet 's avonds vis in Cascais. Voor beginners is het ruig en vlagerig; zij moeten voor vlak water naar de overkant van de Taag.",
+ spots:[
+  {n:"Praia do Guincho",t:"mix",l:"gevorderd",m:20,x:"Nortada 15-25 kn met vlagen, chop en golven 1-2 m, rotsen en stroming."},
+  {n:"Fonte da Telha",t:"chop",l:"alle niveaus",m:50,x:"Open strand, cross-onshore."},
+  {n:"Lagoa de Albufeira",t:"vlak",l:"beginners",m:55,x:"Vlakke lagune, zomerwind onzeker."}],
+ waves:"Guincho heeft altijd iets te rijden: chop en golven tot 1-2 m.",
+ beg:"Zwak punt: binnen 30 min alleen Guincho, te vlagerig en rotsig voor echte beginners.",
+ adv:"Klassieker: big air in 20-30 kn en waveriding.",
+ flights:[
+  {a:"Transavia",r:"AMS-LIS",d:"Dagelijks",th:"ok",t:"2u55",p:240,n:"Kitebag €44 per vlucht."},
+  {a:"KLM",r:"AMS-LIS",d:"Dagelijks",th:"ok",t:"2u50",p:300,n:""},
+  {a:"TAP",r:"AMS-LIS",d:"Dagelijks",th:"ok",t:"3u00",p:290,n:""}],
+ transferNote:"Luchthaven-Colares ±40 min.",
+ villas:[
+  {n:"Villa Branca",u:"https://homes-and-villas.marriott.com/en/properties/40078166-sintra-villa-branca",loc:"Colares, Sintra",bd:7,ba:5,sl:14,pool:"Privé",m:20,p:8000,c:"onbekend",cn:"Juni geschat €7.500-8.500.",cool:7,d:"Witte villa met zwembad en grote tuin in het groene Colares.",pick:true},
+  {n:"Villa Sisi",u:"https://www.villanovo.com/villa-rentals/europe/portugal/sintra/colares/villa-sisi",loc:"Colares, 900 m van Praia Grande",bd:8,ba:6,sl:19,pool:"2 zwembaden, tennis",m:20,p:11000,c:"nee",cn:"Aanbetaling niet terugbetaalbaar.",cool:9,d:"Ruime villa met zeezicht, tennisbaan en voetbalveldje.",flag:"Ver boven budget"},
+  {n:"Villa Maxima",u:"https://www.iberimo.com/en/holiday-rentals-sintra_43742/1011875202027-villa-sintra-7-bedrooms-16-persons",loc:"Bij Praia das Maçãs",bd:7,ba:6,sl:16,pool:"12x5 m",m:20,p:8500,c:"onbekend",cn:"Prijs op aanvraag.",cool:7,d:"Villa met groot zwembad en parkeerplek voor 4 auto's."}],
+ car:{setup:"1x 9-persoons bus + 1x stationwagen",tot:1500},
+ rest:[["Fortaleza do Guincho","Michelin, in een fort aan de spot"],["Porto Santa Maria","Vis en zeevruchten"],["Bar do Guincho","Strandbar na de sessie"],["Azenhas do Mar","Vis in de kliffen"]],
+ pros:["Iconische Nortada-spot","Veel directe vluchten","Topeten en Lissabon dichtbij","Golven voor gevorderden"],
+ cons:["Budget ~€1.350 p.p.","Beginnersspots 45-60 min","Koud water (17 °C)","Guincho vlagerig en rotsig"],
+ photos:[["Kiteforum: Guincho","https://se.kiteforum.com/kitesurf/spot/guincho"],["Kitejungle: Guincho","https://kitejungle.com/portugal/praia-do-guincho/"]],
+ src:["https://kitejungle.com/portugal/praia-do-guincho/","https://se.kiteforum.com/kitesurf/spot/guincho","https://partner.transavia.com/en-EU/service/special-luggage/"]},
+{id:"lanzarote",name:"Lanzarote",country:"Spanje",region:"Famara en Costa Teguise",
+ pal:{sky1:"#e8eef0",sky2:"#93c3dd",sea:"#1f8fb0",sand:"#d9c08c",extra:"cliff"},
+ windPct:78,avgKn:18,dir:"NNO-NO (passaat)",dirDeg:30,air:26,water:20,wetsuit:"3/2 shorty of fullsuit",
+ wavesOk:true,drive:25,single:true,
+ s:{wind:8.5,waves:7,pool:8,rest:7,cancel:5,villa:6,spot:8,levels:8},
+ cost:{flight:320,villa:289,car:72},
+ ko:{bed:["ok","Villa Oasis de Asomada: 9 slaapkamers (4 badkamers)"],flight:["grens","TUI do-do bestaat in winter 2026; Transavia alleen do-retour vanaf eind aug. Juni 2027 checken"],spot:["ok","Costa Teguise 20-25 min, Famara 25-30 min, Playa Honda 15 min"],budget:["ok","~€680 p.p."]},
+ tagline:"Kliffen van Famara, passaat op z'n best en de goedkoopste groepsvilla",
+ desc:"Famara is het iconische kitestrand van Lanzarote: 5 km goudgeel zand onder honderden meters hoge kliffen, met het surfdorpje Caleta de Famara ernaast. De passaat blaast in juni bijna dagelijks side-onshore. Bij laag tij is er vlak water, bij hoog tij golven. Aan de oostkust bieden Costa Teguise en Playa Honda vlak water. Pas op voor de sterke stroming bij Famara.",
+ spots:[
+  {n:"Playa de Famara",t:"mix",l:"alle niveaus",m:30,x:"5 km strand, side-onshore passaat. Laag tij vlak en kniediep, hoog tij golven. Zeer sterke stroming: les of rescue nodig."},
+  {n:"Costa Teguise, Las Cucharas",t:"chop",l:"alle niveaus",m:25,x:"Baai met vlak water/chop en scholen. Let op rotsen en de pier bij laag tij."},
+  {n:"Los Charcos",t:"vlak",l:"gevorderd",m:25,x:"Bijna spiegelvlak water, rotsplaten bij de instap."},
+  {n:"Playa Honda",t:"vlak",l:"gevorderd",m:15,x:"Uitwijkspot bij de luchthaven."},
+  {n:"Jameos del Agua",t:"golven",l:"gevorderd",m:35,x:"Lange golf voor experts, scherpe rotsen."}],
+ waves:"Famara heeft het hele jaar beachbreak, in de zomer kleiner. Jameos voor echte wave-riders.",
+ beg:"Famara bij laag tot half tij met school, en de baai van Las Cucharas. Niet zonder begeleiding door de stroming.",
+ adv:"Golven bij Famara, vlak freestyle-water in Los Charcos en golven bij Jameos. Vaak 20-30 kn.",
+ flights:[
+  {a:"TUI fly",r:"AMS-ACE",d:"do + zo (winter 2026)",th:"grens",t:"4u45",p:330,n:"Heen do 14:15, terug do 18:35. Zomer 2027 onbekend."},
+  {a:"Transavia",r:"AMS-ACE",d:"vooral wo/za/zo",th:"grens",t:"4u15-4u45",p:300,n:"Donderdag-retour vanaf 27 aug 2026; donderdag heen niet bevestigd."},
+  {a:"easyJet",r:"AMS-ACE",d:"nieuw vanaf eind okt 2026",th:"grens",t:"4u45",p:300,n:"Zomer 2027 onbekend."}],
+ transferNote:"ACE ligt centraal: 12 min naar Playa Honda, 25-30 min naar Famara.",
+ villas:[
+  {n:"Villa Oasis de Asomada",u:"https://holidu.co.uk/d/51744959",loc:"La Asomada (Tías)",bd:9,ba:4,sl:18,pool:"Privé, verwarmd (€50/dag)",m:25,p:2600,c:"onbekend",cn:"Afhankelijk van aanbieder. Vanaf ±£220/nacht plus verwarming en schoonmaak.",cool:6,d:"380 m² met 9 slaapkamers, zeezicht, airco en verwarmd zwembad met pergola. Maar 4 badkamers voor 9 personen is krap.",pick:true},
+  {n:"Villa El Palacete",u:"https://www.simplyowners.net/spain/lanzarote/guime/p/54276/",loc:"Güime, bij de luchthaven",bd:9,ba:9,sl:20,pool:"Verwarmd + hottub, sauna",m:20,p:6100,c:"onbekend",cn:"Direct bij de eigenaar.",cool:8,d:"Luxe villa met 9 en-suites, panoramisch zeezicht, pooltafel en putting green. Met deze villa ~€1.070 p.p."},
+  {n:"Whispering Palms",u:"https://www.simplyowners.net/spain/lanzarote/puerto-del-carmen/p/54284/",loc:"Puerto del Carmen",bd:7,ba:7,sl:20,pool:"Verwarmd",m:35,p:4900,c:"onbekend",cn:"Direct bij de eigenaar.",cool:6,d:"7 en-suites plus bungalow, loopafstand restaurants. Famara 35 min."}],
+ car:{setup:"2 auto's bij Cicar/Cabrera Medina (all-risk)",tot:650},
+ rest:[["El Risco (Famara)","Lokale vis met uitzicht op de kliffen"],["Sol Restaurant (Famara)","Moderne Canarische keuken"],["El Chiringuito de Famara","Strandtent, budget"],["Teguise / El Golfo","Tapas in het oude dorp, vis aan zee"]],
+ pros:["Passaat in hoogseizoen (~78%)","Golven, vlak water en chop op één klein eiland","Spectaculair decor","Ruim binnen budget"],
+ cons:["Donderdagvluchten juni 2027 onzeker","Grote villa's niet in Famara zelf","Sterke stroming bij Famara","Budgetvilla: 4 badkamers"],
+ photos:[["Hello Canary Islands: Famara","https://www.hellocanaryislands.com/kitesurfing/lanzarote/kitesurfing-famara-beach/"],["TheKiteSpot: Famara","https://locations.thekitespot.com/locations/kitesurf-lanzarote-famara-canary-islands"]],
+ src:["https://locations.thekitespot.com/locations/kitesurf-lanzarote-famara-canary-islands","https://www.flight.info/OR1577","https://info.flightmapper.net/flight/Transavia_HV_5684","https://holidu.co.uk/d/51744959"]},
+
+{id:"gokova",name:"Gökova / Akyaka",country:"Turkije",region:"Muğla, via Dalaman",
+ pal:{sky1:"#d9eef5",sky2:"#7fbfdc",sea:"#1aa3a8",sand:"#e9dcb8",extra:"hills"},
+ windPct:75,avgKn:17,dir:"W-WZW (thermiek)",dirDeg:283,air:31,water:24,wetsuit:"Geen; lycra of shorty",
+ wavesOk:false,drive:8,single:false,
+ s:{wind:8,waves:0.5,pool:9,rest:8,cancel:4,villa:6,spot:7,levels:8.5},
+ cost:{flight:420,villa:533,car:133},
+ ko:{bed:["nee","Geen 7-kamervilla binnen 30 min; Villa Greenland 1+2 naast elkaar (6 slpk)"],flight:["ok","Corendon AMS-DLM do heen en terug (zomer 2026), ±4u"],spot:["ok","Kite beach 5-10 min"],budget:["grens","~€1.085 p.p."]},
+ tagline:"Onbekende thermiekbaai: vlak, warm en vrijwel elke middag wind",
+ desc:"Gökova is een enorme, ondiepe zandbaai aan het oosteinde van de golf, met dennenbergen eromheen en het heldere riviertje de Azmak. Vanaf het middaguur komt er bijna dagelijks 15-22 kn thermiek op vlak, warm water. Voor beginners een van de beste plekken van Europa, voor gevorderden een freestyle-speeltuin. Ochtenden zijn windstil en het strand wordt druk met scholen.",
+ spots:[
+  {n:"Gökova Kite Beach",t:"vlak",l:"alle niveaus",m:8,x:"Ondiep tot ±150 m uit de kust, zandbodem, geen shorebreak. Aparte lesgebieden, rescueboten, ±10 scholen."}],
+ waves:"Geen golven; hooguit lichte chop verder uit de kust.",
+ beg:"Uitstekend: staan op een groot oppervlak, zandbodem, wind zonder vlagen, apart lesgebied en reddingsboten.",
+ adv:"Vlak water met 18-22 kn voor freestyle, freeride en foil. Geen golven, druk met scholen.",
+ flights:[
+  {a:"Corendon",r:"AMS-DLM",d:"do (1x/week, zomer 2026)",th:"ok",t:"±4u00",p:420,n:"Heen do middag/avond, terug do nacht (landt na middernacht)."},
+  {a:"TUI fly",r:"AMS-DLM",d:"najaar ma/wo/zo",th:"grens",t:"3u55",p:450,n:"Zomerdagen onbekend."},
+  {a:"Div.",r:"AMS-BJV (Bodrum)",d:"meerdere per week",th:"grens",t:"3u45",p:400,n:"Daarna 2 uur rijden."}],
+ transferNote:"Dalaman-Akyaka 1u00-1u15 rijden.",
+ villas:[
+  {n:"Villa Greenland 1 + 2",u:"https://villasepeti.com/en/home/gokova/villa-greenland-1",loc:"Akyaka, 1 km van strand en Azmak",bd:6,ba:6,sl:16,pool:"2x privé 7x4 m",m:8,p:4800,c:"onbekend",cn:"Voorwaarden niet zichtbaar. Borg ₺5.000 per villa.",cool:6,d:"Twee moderne zustervilla's naast elkaar, bedoeld voor grotere groepen. Lopen naar de restaurants aan de Azmak.",pick:true,flag:"Twee villa's, 6 slaapkamers totaal"},
+  {n:"Villa VL-13806",u:"https://www.tatilsepeti.com/mugla-akyakada-denize-yakin-ozel-havuzlu-konforlu-villa-vl-13806",loc:"Akyaka, 2 min van strand",bd:4,ba:2,sl:8,pool:"Privé 9x3 m",m:7,p:2200,c:"nee",cn:">60 dagen 40% kosten, daarna 100%.",cool:5,d:"245 m² met fruitbomen en bbq. Alleen in combinatie.",flag:"Slechts 4 slaapkamers"}],
+ car:{setup:"2 auto's bij DLM (7-zitter + stationwagen)",tot:1200},
+ rest:[["Orfoz","Calamari en mezze aan de Azmak"],["Nadir Usta","Vis aan de rivier, vers dorpsbrood"],["Big Blue","Uitzicht over de baai"],["Rüzgar","Modern, goede steaks"]],
+ pros:["Bijna dagelijkse middagthermiek (lokale bronnen)","Vlak, ondiep, warm water","Donderdagvlucht met Corendon","Sfeervol, onontdekt dorp"],
+ cons:["Geen 7-kamervilla: 2 villa's","Ochtenden windstil","Geen golven","Modeldata en lokale claims verschillen sterk","Nachtvlucht terug"],
+ photos:[["IKSURFMAG: Gökova","https://iksurfmag.com/travel-guides/europe/turkey/gokova"],["Marmarisinfo: Akyaka Kite Beach","https://www.marmarisinfo.com/the-hearth-of-kitesurfing-and-windsurfing-fantastic-beautiful-beach"]],
+ src:["https://iksurfmag.com/travel-guides/europe/turkey/gokova","https://kitejungle.com/kite-places/turkey/gokova","https://www.airportia.com/flights/cd5109/amsterdam/dalaman/","https://villasepeti.com/en/home/gokova/villa-greenland-2"]},
+
+{id:"viana",name:"Viana do Castelo",country:"Portugal",region:"Minho, via Porto",
+ pal:{sky1:"#e4edf0",sky2:"#a2c4d6",sea:"#2b7593",sand:"#e3d3ad",extra:"hills"},
+ windPct:66,avgKn:18,dir:"NNW (Nortada)",dirDeg:340,air:22,water:16,wetsuit:"4/3 fullsuit",
+ wavesOk:true,drive:5,single:true,
+ s:{wind:6.5,waves:8,pool:9,rest:7,cancel:5,villa:8,spot:8,levels:9.5},
+ cost:{flight:320,villa:700,car:128},
+ ko:{bed:["ok","Villa Marmita 7 slpk; landhuis Perre 8 slpk"],flight:["ok","KLM 4x per dag en Transavia (bijna) dagelijks AMS-OPO, 2u45"],spot:["ok","Cabedelo op 5 min lopen van Villa Marmita"],budget:["grens","~€1.150 p.p. met Marmita; ~€950 met landhuis Perre"]},
+ tagline:"Vlak riviermondwater en GKA-golven op 500 meter van elkaar",
+ desc:"Cabedelo ligt aan de riviermond van de Lima, recht tegenover het historische Viana do Castelo. Achter de pier ligt een groot, ondiep flatwatergebied voor beginners en foilers. Vijfhonderd meter zuidelijker, bij Rodanho, breken de golven waar de GKA Kite-Surf World Tour stopte. De Nortada blaast in juni 's middags 15-25 kn.",
+ spots:[
+  {n:"Cabedelo noord (achter de pier)",t:"vlak",l:"beginners",m:5,x:"Beschut, vaak heupdiep. Getijafhankelijk, stroming in de geul bij afgaand tij. Scholen: Kite Voodoo, Modo Experto."},
+  {n:"Rodanho",t:"golven",l:"gevorderd",m:5,x:"Golven op zandbodem, GKA-spot. Rotsveldje bij laagwater."},
+  {n:"Esposende / Ofir",t:"mix",l:"alle niveaus",m:30,x:"Riviermond met vlak water binnen en golven buiten, minder druk."}],
+ waves:"Rodanho heeft golven op zandbodem; zomerswell meestal 1-1,5 m.",
+ beg:"Uitstekend: beschut, ondiep en vlak achter de pier. Leren rond hoogwater.",
+ adv:"GKA-golfspot plus glasvlak water voor foil en freestyle, beginners en gevorderden op dezelfde spot.",
+ flights:[
+  {a:"KLM",r:"AMS-OPO",d:"dagelijks, ±4x per dag",th:"ok",t:"2u45",p:330,n:"Kitetas mag in plaats van een koffer."},
+  {a:"Transavia",r:"AMS-OPO",d:"(bijna) dagelijks",th:"ok",t:"2u45",p:300,n:"Sportbagage ±€50-70 per richting."}],
+ transferNote:"Porto-Cabedelo 40-50 min over de A28 (elektronische tol).",
+ villas:[
+  {n:"Villa Marmita",u:"https://www.oliverstravels.com/portugal/minho/villa-marmita/",loc:"Cabedelo, 650 m van het strand",bd:7,ba:5,sl:14,pool:"Privé + gym",m:2,p:6300,c:"deels",cn:"100% terug binnen 48 uur na boeking, daarna standaardvoorwaarden. Juni 2024: £4.851/week.",cool:8,d:"Moderne villa met 7 slaapkamers (4 twin) op 5 min lopen van de spot. Restaurants op loopafstand, Viana via het veerpontje.",pick:true},
+  {n:"Landhuis Perre",u:"https://p2538.atraveo.com/us_en/655076",loc:"Perre, 6 km landinwaarts",bd:8,ba:7,sl:20,pool:"Granieten zwembassin",m:15,p:4500,c:"nee",cn:"20% bij >60 dagen, oplopend tot 95%.",cool:7,d:"Honderd jaar oud landhuis met 7 en-suites plus gastenhuis en grote tuinen. Goedkoopste optie (~€950 p.p.), prijs nog verifiëren."},
+  {n:"Landgoed Ponte de Lima",u:"https://www.airbnb.com/rooms/3130293",loc:"Ponte de Lima",bd:11,ba:10,sl:16,pool:"Verwarmd binnenbad, tennis",m:35,p:6000,c:"onbekend",cn:"Prijs pas zichtbaar met datums.",cool:6,d:"Hoofdhuis plus cottage, maar binnenbad en ±35 min naar de spot."}],
+ car:{setup:"9-persoonsbus + stationwagen bij OPO, met Via Verde",tot:1150},
+ rest:[["Casa d'Armas","Herenhuis aan het water, octopus en bacalhau"],["Tasquinha da Linda","Vis aan de kade"],["O Laranjeira","Minho-klassiekers"],["Aquário Bar (Cabedelo)","Strandbar na de sessie"]],
+ pros:["Vlak water en golven op 500 m","Villa op loopafstand van de spot","Veel vluchten, korte transfer","Mooie historische stad en vinho verde"],
+ cons:["Budget krap met de beste villa","Thermiek komt pas 's middags; zeemist kan hem tegenhouden","Koud water (±16 °C)","Druk in het hoogseizoen"],
+ photos:[["Kitejungle: Praia do Cabedelo","https://kitejungle.com/kite-places/portugal/praia-do-cabedelo"],["Progression: spotgids Viana","https://progression.me/blog/viana-do-castelo-portugal-kitesurfing-spot-guide/"]],
+ src:["https://locations.thekitespot.com/locations/kitesurf-viana-do-castelo-portugal","https://www.flightsfrom.com/AMS-OPO","https://www.oliverstravels.com/portugal/minho/villa-marmita/","https://p2538.atraveo.com/us_en/655076"]},
+
+{id:"grancanaria",name:"Gran Canaria",country:"Spanje",region:"Oostkust: Pozo, Vargas, Arinaga",
+ pal:{sky1:"#e9eef0",sky2:"#8fbcd8",sea:"#22789f",sand:"#cdb88d",extra:"cliff"},
+ windPct:85,avgKn:21,dir:"NO (passaat)",dirDeg:22,air:23,water:21,wetsuit:"Shorty 2-3 mm",
+ wavesOk:true,drive:12,single:true,
+ s:{wind:9.5,waves:8,pool:9,rest:6,cancel:5,villa:8,spot:8,levels:5},
+ cost:{flight:420,villa:556,car:83},
+ ko:{bed:["ok","Architectuurvilla Ingenio: 7 slaapkamers, 6 badkamers"],flight:["ok","Transavia en TUI AMS-LPA met donderdagen, 4u40-5u05"],spot:["ok","Vargas en Burrero 10-15 min, Pozo 20 min"],budget:["grens","~€1.060 p.p."]},
+ tagline:"Windzekerste plek van Europa, maar pittig voor beginners",
+ desc:"De zuidoostkust van Gran Canaria is in juni een van de winderigste plekken van Europa: de passaat wordt tussen de bergen versneld en blaast bijna dagelijks 20-35 kn. Pozo Izquierdo is legendarisch, met golven, rotsen en spectaculaire sprongen. Vargas en Playa del Burrero zijn net iets toegankelijker, en in het zuiden geven scholen les met rescueboot.",
+ spots:[
+  {n:"Salinas de Tenefé (Pozo)",t:"golven",l:"gevorderd",m:20,x:"Wereldklasse, 20-35+ kn. Alleen experts, alleen bij hoogwater door rotsen."},
+  {n:"Vargas",t:"mix",l:"gevorderd",m:12,x:"Golven met meerdere peaks, sterke stroming, kliffen benedenwinds."},
+  {n:"Playa del Burrero",t:"chop",l:"alle niveaus",m:10,x:"Zandstrand, iets beschutter; beginners alleen met begeleiding."},
+  {n:"Salinas del Matorral / Bahía Feliz",t:"chop",l:"alle niveaus",m:20,x:"Iets minder wind, scholen met rescueboot (Siroco)."}],
+ waves:"Pozo en Vargas hebben golven; in de zomer vooral windswell.",
+ beg:"Beperkt: 20-35 kn, rotsen en stroming. Lessen met rescueboot in het zuiden; op dagen met 30+ kn is les weinig zinvol.",
+ adv:"Een van de beste high-wind wave- en bump-and-jump spots van Europa. Bijna gegarandeerd elke dag wind.",
+ flights:[
+  {a:"Transavia",r:"AMS-LPA",d:"meerdere per week, o.a. do",th:"ok",t:"4u40-5u05",p:420,n:"Donderdag heen én terug voor 2027 checken."},
+  {a:"TUI fly",r:"AMS-LPA",d:"meerdere per week, o.a. do",th:"ok",t:"4u45-5u05",p:450,n:"Bagage meestal inbegrepen."}],
+ transferNote:"De luchthaven ligt in het spotgebied: 10-20 min naar alle spots.",
+ villas:[
+  {n:"Villa met extravagante architectuur",u:"https://uk.hotels.com/ho3474504992/villa-with-pool-and-extravagant-architecture",loc:"Ingenio, bij Vargas en Burrero",bd:7,ba:6,sl:12,pool:"Privé + spa",m:12,p:5000,c:"onbekend",cn:"Prijs pas zichtbaar met datums. Borg €1.000, min. leeftijd 21.",cool:8,d:"Moderne villa met binnenplaats, fontein, spa en zwembad; het dichtst bij de spots.",pick:true},
+  {n:"Villa Azores",u:"https://www.oliverstravels.com/spain/canary-islands/gran-canaria/villa-azores/",loc:"El Salobre (zuid)",bd:7,ba:3,sl:14,pool:"10x4 m, verwarming optioneel",m:28,p:4500,c:"onbekend",cn:"Voorwaarden per boeking.",cool:6,d:"Rustieke landhuisvilla, maar 3 badkamers en ±28 min naar Pozo."},
+  {n:"Villa Esmeralda",u:"https://www.clickstay.com/p/448995",loc:"Patalavaca (zuidwest)",bd:7,ba:4,sl:16,pool:"Verwarmd",m:35,p:6000,c:"deels",cn:"Kosten afhankelijk van moment.",cool:7,d:"Strandvilla met zeezicht, maar ±35 min naar de spots."}],
+ car:{setup:"7-zitter + stationwagen (Cicar)",tot:750},
+ rest:[["Ca' Miguel (Arinaga)","Vis aan de boulevard"],["Atis Tirma (Agüimes)","Canarisch in het oude centrum"],["Faro de Arinaga","Vis bij de vuurtoren"],["Pizzería Presidente","Makkelijk voor de groep"]],
+ pros:["85-93% winddagen, gem. ~21 kn","Luchthaven op 15 min van de spots","Wereldklasse voor gevorderden","Donderdagvluchten"],
+ cons:["Vaak te veel wind voor beginners","Rotsen, stroming, geen echte lagune","Oostkust weinig sfeervol","Budget net boven €1.000"],
+ photos:[["Kitejungle: Pozo Izquierdo","https://kitejungle.com/kite-places/spain/salinas-tenefe-pozo-izquierdo"],["Hello Canary Islands: Vargas","https://www.hellocanaryislands.com/kitesurfing/gran-canaria/kitesurfing-vargas-beach"]],
+ src:["https://kitejungle.com/kite-places/spain/vargas","https://info.flightmapper.net/flight/Transavia_HV_6521","https://uk.hotels.com/ho3474504992/villa-with-pool-and-extravagant-architecture"]},
+
+{id:"lefkada",name:"Lefkada",country:"Griekenland",region:"Ionische Eilanden, via Preveza",
+ pal:{sky1:"#dcecf5",sky2:"#7db9df",sea:"#1689b8",sand:"#e8dcc0",extra:"windmill"},
+ windPct:70,avgKn:16,dir:"NW (Maistro)",dirDeg:315,air:28,water:23,wetsuit:"Boardshort of shorty",
+ wavesOk:false,drive:15,single:true,
+ s:{wind:8,waves:3,pool:10,rest:8,cancel:5,villa:7,spot:7,levels:9},
+ cost:{flight:390,villa:856,car:145},
+ ko:{bed:["nee","Geen 7-kamervilla bij de spots; Villa Lygian 5 slpk (15 min), Arkoudaki 6 slpk (40 min)"],flight:["grens","Transavia AMS-PVK do heen en terug, maar rooster wisselt rond 18-25 juni"],spot:["ok","Drie spots binnen 10-15 min van Lefkada-stad"],budget:["nee","~€1.390 p.p. met Villa Lygian"]},
+ tagline:"Betrouwbare middagthermiek en drie spots naast elkaar, maar geen groepsvilla",
+ desc:"Lefkada combineert drie spots binnen 10 minuten van Lefkada-stad: het lange strand van Agios Ioannis bij de windmolens met chop en ruimte, en twee ondiepe lagunes voor beginners en freestylers. De Maistro komt in de zomer bijna dagelijks rond het middaguur met 15-20 kn en blijft tot zonsondergang.",
+ spots:[
+  {n:"Agios Ioannis / Milos",t:"chop",l:"alle niveaus",m:10,x:"Lang strand bij de windmolens, side-shore, veel ruimte, meerdere scholen."},
+  {n:"Agios Nikolaos-lagune",t:"vlak",l:"beginners",m:10,x:"Knie- tot borstdiep, side-onshore, mobiele scholen."},
+  {n:"Wooden Bridge / The Church",t:"vlak",l:"alle niveaus",m:10,x:"Spiegelgladde lagune voor freestyle en foil."},
+  {n:"Vassiliki",t:"chop",l:"gevorderd",m:50,x:"Windsurfbaai, kiten beperkt."}],
+ waves:"Alleen chop en kleine windgolven bij Agios Ioannis.",
+ beg:"Uitstekend: de ondiepe lagune met side-onshore wind ligt op 10 min.",
+ adv:"Chop en jumps bij Agios Ioannis, glad water voor freestyle. Zelden boven 25 kn, geen golven.",
+ flights:[
+  {a:"Transavia",r:"AMS-PVK",d:"o.a. di, do, vr, za, zo",th:"grens",t:"2u50 / 3u10",p:390,n:"Do-vlucht bestaat, maar wisselt van tijd rond 18-25 juni (2026). Checken voor 2027."},
+  {a:"TUI fly",r:"AMS-PVK",d:"2x per week",th:"grens",t:"±3u",p:400,n:"Dagen niet bevestigd."}],
+ transferNote:"Preveza-Lefkada-stad 20-30 min.",
+ villas:[
+  {n:"Villa Lygian",u:"https://oliverstravels.com/greece/lefkada/villa-lygian",loc:"Katouna, 10 min van Lefkada-stad",bd:5,ba:5,sl:10,pool:"Privé 33 m², buitenbioscoop",m:15,p:7700,c:"onbekend",cn:"Borg €1.000.",cool:7,d:"Sfeervolle villa met zeezicht, op loopafstand van strand en dorp, maar krap voor 9.",pick:true,flag:"Slechts 5 slaapkamers"},
+  {n:"Villa Arkoudaki",u:"https://www.airbnb.com/rooms/1343988896588177802",loc:"Syvota (zuidoost)",bd:6,ba:6,sl:16,pool:"Infinity met zeezicht",m:40,p:10500,c:"onbekend",cn:"Superhost.",cool:9,d:"Luxe villa met infinity pool en eigen pad naar zee, maar 40 min van de spots.",flag:"6 slaapkamers, 40 min"}],
+ car:{setup:"9-zitter + stationwagen bij PVK",tot:1300},
+ rest:[["Sto Molo","Ionische keuken aan het water"],["Thymari","Mediterraan in historisch pand"],["Psarotaverna tou Zisimou","Vis aan het water"],["Evi's Mezepoleion","Meze voor de groep"]],
+ pros:["Betrouwbare thermiek van 15-20 kn","Drie spots binnen 10 min","Uitstekende beginnerslagune","Korte vlucht, warm water"],
+ cons:["Geen villa met 7+ slaapkamers","Ruim boven budget","Donderdagrooster onzeker","Geen golven"],
+ photos:[["IKSURFMAG: Lefkada","https://www.iksurfmag.com/travel-guides/europe/greece/lefkada/"],["The Kite Mag: Lefkada","https://thekitemag.com/features/lefkada-hidden-gem"]],
+ src:["https://www.iksurfmag.com/travel-guides/europe/greece/lefkada/","https://info.flightmapper.net/flight/Transavia_HV_5793","https://oliverstravels.com/greece/lefkada/villa-lygian"]}
+
+];
+
+const PHOTOS={"alacati": [["alacati-spot-2.jpg", "David Broad, CC BY 3.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:Alacati_Bay_-_ideal_windsurfing_competition_area_-_panoramio.jpg"], ["alacati-spot-1.jpg", "web.kite-and-windsurfing-guide.com", "https://web.kite-and-windsurfing-guide.com/images/spots/galleries/12224/_thumb1/pana1579.jpg"]], "elgouna": [["elgouna-spot-1.jpg", "Maarten Visser from Capelle aan den IJssel, Nederland, CC BY-SA 2.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:Kitesurfing_in_El_Gouna,_2012.jpg"], ["elgouna-spot-2.jpg", "Marc Ryckaert, CC BY 3.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:El_Gouna_R11.jpg"]], "essaouira": [["essaouira-spot-1.jpg", "locations.thekitespot.com", "https://locations.thekitespot.com/storage/location_intro/5ca20f06a47a1-essaouirakite.jpg"], ["essaouira-spot-2.jpg", "locations.thekitespot.com", "https://locations.thekitespot.com/storage/location_shot/5ca21054c0261-Morocco-SURF-Essaouira.jpg"], ["essaouira-spot-3.jpg", "locations.thekitespot.com", "https://locations.thekitespot.com/storage/location_shot/5d6f92b78242b-essaouiracameljump.jpeg"]], "fuerteventura": [["fuerteventura-noord-1.jpg", "Thomas Tolkien from Yorkshire, UK, CC BY 2.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:Flag_Beach_(Kite_Beach)_Corralejo_Fuerteventura_(33896530382).jpg"], ["fuerteventura-noord-2.jpg", "Thomas Tolkien from Yorkshire, UK, CC BY 2.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:Flag_Beach_(Kite_Beach)_Corralejo_Fuerteventura_(33210980684).jpg"], ["fuerteventura-noord-3.jpg", "Dirk Vorderstraße, CC BY 2.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:Luftbild_Strand_von_El_Cotillo,_Westk%C3%BCste_-_51500903888.jpg"], ["fuerteventura-spot-1.jpg", "Sotavento (dagtrip): Chrumps, CC BY-SA 4.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:Kitesurfing_Sotavento.jpg"], ["fuerteventura-spot-2.jpg", "Sotavento (dagtrip): Frank Vincentz, CC BY-SA 3.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:P%C3%A1jara_-_Playa_de_Sotavento_01_ies.jpg"]], "kos": [["kos-spot-2.jpg", "ΔΗΜΟΣ ΚΩ, CC BY-SA 4.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:Mastichari_Kos.jpg"], ["kos-spot-1.jpg", "Алексей Решетников, CC BY 3.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:Marmari_beach_-_panoramio.jpg"]], "lisbon": [["lisbon-spot-3.jpg", "se.kiteforum.com", "https://se.kiteforum.com/public/spot_photo/1a/24/23f6_9e44.jpg"], ["lisbon-spot-1.jpg", "se.kiteforum.com", "https://se.kiteforum.com/public/spot_photo/d6/1e/1eb8_9db4.jpg"], ["lisbon-spot-2.jpg", "se.kiteforum.com", "https://se.kiteforum.com/public/spot_photo/95/1f/1f76_a5cc.jpg"]], "rhodes": [["rhodes-spot-1.jpg", "kiteworldwide.com", "https://kiteworldwide.com/kww-media/pages/kitesurfing-in-rhodos_1200x800.jpg"], ["rhodes-spot-2.jpg", "Ввласенко, CC BY-SA 3.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:Kitesurfing_near_Prasonisi._Rhodes,_Greece.jpg"]], "stagnone": [["stagnone-spot-1.jpg", "MRT8922, CC BY-SA 4.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:Kite_al_tramonto_presso_la_Riserva_Orientata_di_Marsala.jpg"], ["stagnone-spot-2.jpg", "GrilloSurf, CC BY-SA 4.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:Federico-Grillo.jpg"]], "tarifa": [["tarifa-spot-1.jpg", "Isiwal, CC BY-SA 4.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:Tarifa_playa_los_lances_strapless_kiter-4413.jpg"], ["tarifa-spot-2.jpg", "Kitesurifng School Gone Kiting Tarifa, CC BY-SA 4.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:Kitesurfing_beach_in_Tarifa.jpg"]], "gokova": [["gokova-spot-1.jpg", "marmarisinfo.com", "https://www.marmarisinfo.com/wp-content/uploads/2023/07/Akyaka-Kite-Beach.jpg"], ["gokova-spot-2.jpg", "Hamdigumus, CC0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:U%C3%A7urtma_S%C3%B6rf%C3%BC,_Akyaka,_Mu%C4%9Fla_2015.jpg"]], "grancanaria": [["grancanaria-spot-1.jpg", "Nathalie Cools, CC BY-SA 4.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:Zicht_op_de_baai_met_windsurfers_in_Pozo_Izquierdo.jpg"], ["grancanaria-spot-2.jpg", "Bloomy, CC BY-SA 4.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:PlayaDePozoIzquierdo.jpg"]], "lanzarote": [["lanzarote-spot-3.jpg", "Halferitos, CC BY-SA 3.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:Kitesurfing_in_lanzarote.JPG"], ["lanzarote-spot-1.jpg", "hellocanaryislands.com", "https://www.hellocanaryislands.com/sites/default/files/styles/masonry_image/public/resources/resource_image/playa_famara-lanzarote_5.jpg"], ["lanzarote-spot-2.jpg", "hellocanaryislands.com", "https://www.hellocanaryislands.com/sites/default/files/styles/masonry_image/public/resources/resource_image/PH1022-gal.jpg"]], "lefkada": [["lefkada-spot-1.jpg", "greeka.com", "https://www.greeka.com/village_beach/photos/29/agios-ioannis-top-1-1024.jpg"], ["lefkada-spot-2.jpg", "magrolino[1], Public domain, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:Lefkada_agios_ioannis.jpg"]], "viana": [["viana-spot-1.jpg", "kitejungle.com", "https://kitejungle.com/wp-content/uploads/2019/03/Praia-Do-Cabedelo-Viana-do-Castelo-kitesurf.jpg"], ["viana-spot-2.jpg", "Ycomet, CC BY-SA 3.0, Wikimedia Commons", "https://commons.wikimedia.org/wiki/File:PraiaCabedelo.jpg"]]};
+const VIMG={"essaouira": {"Dar Algajola": "essaouira-villa-dar-algajola.jpg", "Riad Dharma": "essaouira-villa-riad-dharma.jpg", "Dar Mamoune": "essaouira-villa-dar-mamoune.jpg"}, "alacati": {"Villa Sunset": "alacati-villa-sunset.jpg", "ALASHATO": "alacati-villa-alashato.jpg"}, "elgouna": {"2x villa Tawila": "elgouna-villa-tawila.jpg", "Villa met privézwembad": "elgouna-villa-jacuzzi.jpg"}, "kos": {"Horizon": "kos-villa-horizon.jpg"}, "tarifa": {"Villa rústica": "tarifa-villa-la-pena.jpg", "Villa TheCUBE": "tarifa-villa-thecube.jpg"}, "rhodes": {"Vento Estivo": "rhodes-villa-vento-estivo.jpg", "Villa Seven": "rhodes-villa-seven.jpg"}, "stagnone": {"Villa Marettimo": "stagnone-villa-marettimo.jpg"}, "lisbon": {"Villa Branca": "lisbon-villa-branca.jpg", "Villa Sisi": "lisbon-villa-sisi.jpg"}, "fuerteventura": {"Volcano Retreat": "fuerteventura-villa-volcano-1.jpg"}, "lanzarote": {"Villa Oasis": "lanzarote-villa-oasis.jpg", "Villa El Palacete": "lanzarote-villa-palacete.jpg", "Whispering Palms": "lanzarote-villa-whispering.jpg"}, "gokova": {"Villa Greenland": "gokova-villa-greenland.jpg"}, "grancanaria": {"Villa Azores": "grancanaria-villa-azores.jpg", "Villa Esmeralda": "grancanaria-villa-esmeralda.jpg"}};
+function vimg(s,v){const m=VIMG[s.id]||{};const k=Object.keys(m).find(k=>v.n.startsWith(k));return k?"img/"+m[k]:null;}
+function heroImg(s){const p=PHOTOS[s.id];return p&&p.length?"img/"+p[0][0]:null;}
+
+/* ---------- state ---------- */
+const DEF=Object.fromEntries(CRIT.map(c=>[c.k,c.w]));
+let W={...DEF};
+try{const s=JSON.parse(localStorage.getItem("kt-w")||"null");if(s)W={...W,...s};}catch(e){}
+const $=id=>document.getElementById(id);
+const fmt=n=>"€"+Math.round(n).toLocaleString("nl-NL");
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const total=s=>s.cost.flight+s.cost.villa+s.cost.car;
+const priceScore=t=>clamp((1400-t)/600*10,0,10);
+const distScore=m=>clamp(10-(m-10)/5,0,10);
+
+function sub(s){return{...s.s,dist:distScore(s.drive),price:priceScore(total(s))};}
+function penalty(s){let p=0;Object.values(s.ko).forEach(([st])=>{if(st==="nee")p+=10;else if(st==="grens")p+=3;});return p;}
+function score(s){
+  const ss=sub(s);let sw=0,acc=0;
+  CRIT.forEach(c=>{sw+=W[c.k];acc+=W[c.k]*ss[c.k];});
+  let v=sw?acc/sw*10:0;
+  if($("f-pen").checked)v-=penalty(s);
+  return clamp(Math.round(v),0,100);
+}
+function beaufort(kn){const t=[1,3,6,10,16,21,27,33,40,47,55,63];let b=0;while(b<t.length&&kn>=t[b])b++;return b;}
+
+/* ---------- illustration ---------- */
+function hash(str){let h=2166136261;for(const ch of str){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
+function rnd(seed){return()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};}
+function postcard(s,w=600,h=400,big=false){
+  const p=s.pal,r=rnd(hash(s.id)),hz=h*0.52;
+  let extra="";
+  if(p.extra==="medina"){for(let i=0;i<9;i++){const x=w*0.02+i*w*0.05,bh=h*(0.05+r()*0.07);extra+=`<rect x="${x}" y="${hz-bh}" width="${w*0.045}" height="${bh}" fill="#f7f3ea"/>`;}extra+=`<rect x="${w*0.2}" y="${hz-h*0.17}" width="${w*0.025}" height="${h*0.17}" fill="#f7f3ea"/>`;}
+  if(p.extra==="windmill"){[[0.12,0.08],[0.2,0.06]].forEach(([fx,fs])=>{const x=w*fx,y=hz-h*fs*1.8;extra+=`<rect x="${x-4}" y="${y}" width="8" height="${h*fs*1.8}" fill="#f5efe2"/><g stroke="#f5efe2" stroke-width="3"><line x1="${x}" y1="${y}" x2="${x+22}" y2="${y-16}"/><line x1="${x}" y1="${y}" x2="${x-20}" y2="${y-18}"/><line x1="${x}" y1="${y}" x2="${x+4}" y2="${y+24}"/></g>`;});}
+  if(p.extra==="palm"){[[0.1],[0.17]].forEach(([fx])=>{const x=w*fx,y=hz-h*0.18;extra+=`<path d="M${x} ${hz} Q${x+6} ${hz-h*0.09} ${x+2} ${y}" stroke="#6b4f2a" stroke-width="4" fill="none"/>`;for(let k=0;k<5;k++){const a=-2.6+k*0.55;extra+=`<path d="M${x+2} ${y} q${Math.cos(a)*26} ${Math.sin(a)*14} ${Math.cos(a)*44} ${Math.sin(a)*10+14}" stroke="#2f7d4a" stroke-width="4" fill="none" stroke-linecap="round"/>`;}});}
+  if(p.extra==="dune"){extra+=`<path d="M0 ${hz} Q${w*0.12} ${hz-h*0.2} ${w*0.32} ${hz} Z" fill="${p.sand}"/>`;}
+  if(p.extra==="hills"){extra+=`<path d="M0 ${hz} Q${w*0.15} ${hz-h*0.12} ${w*0.3} ${hz-h*0.03} T${w*0.55} ${hz} Z" fill="#9aa98a" opacity=".8"/>`;}
+  if(p.extra==="cliff"){extra+=`<path d="M0 ${hz-h*0.16} L${w*0.14} ${hz-h*0.12} L${w*0.22} ${hz} L0 ${hz} Z" fill="#7d7a70"/>`;}
+  let kites="";const n=big?4:3;
+  for(let i=0;i<n;i++){const kx=w*(0.4+r()*0.5),ky=h*(0.1+r()*0.25),ks=w*(0.05+r()*0.04),rx=kx-ks*0.3+r()*ks,ry=hz+h*(0.08+r()*0.12);
+    const col=["#ff5a1f","#ffd23f","#ff3d7f","#2dd4bf","#ffffff"][Math.floor(r()*5)];
+    kites+=`<line x1="${kx-ks}" y1="${ky+ks*0.3}" x2="${rx}" y2="${ry}" stroke="#0f2230" stroke-opacity=".35" stroke-width="1"/><line x1="${kx+ks}" y1="${ky+ks*0.3}" x2="${rx}" y2="${ry}" stroke="#0f2230" stroke-opacity=".35" stroke-width="1"/><path d="M${kx-ks} ${ky+ks*0.35} Q${kx} ${ky-ks*0.7} ${kx+ks} ${ky+ks*0.35} Q${kx} ${ky-ks*0.2} ${kx-ks} ${ky+ks*0.35} Z" fill="${col}"/><circle cx="${rx}" cy="${ry-6}" r="3" fill="#0f2230"/><line x1="${rx-8}" y1="${ry+1}" x2="${rx+8}" y2="${ry-1}" stroke="#0f2230" stroke-width="2.5"/>`;}
+  let waves="";for(let i=0;i<6;i++){const y=hz+h*0.05+i*h*0.045,x=r()*w*0.8;waves+=`<path d="M${x} ${y} q12 -4 24 0 t24 0" stroke="#fff" stroke-opacity=".5" stroke-width="1.5" fill="none"/>`;}
+  const gid="g"+s.id+(big?"b":"");
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustratie van ${s.name}"><defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p.sky2}"/><stop offset="1" stop-color="${p.sky1}"/></linearGradient></defs><rect width="${w}" height="${hz}" fill="url(#${gid})"/><circle cx="${w*0.82}" cy="${h*0.16}" r="${h*0.06}" fill="#fff6d6" opacity=".9"/>${extra}<rect y="${hz}" width="${w}" height="${h*0.36}" fill="${p.sea}"/>${waves}<path d="M0 ${h*0.86} Q${w*0.5} ${h*0.8} ${w} ${h*0.88} L${w} ${h} L0 ${h} Z" fill="${p.sand}"/>${kites}${big?`<text x="20" y="${h-18}" font-family="JetBrains Mono,monospace" font-size="13" fill="#0f2230" opacity=".7">illustratie</text>`:""}</svg>`;
+}
+function compass(deg){return `<svg class="compass" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28" fill="none" stroke="var(--line)" stroke-width="2"/><text x="32" y="12" text-anchor="middle" font-size="9" fill="var(--muted)" font-family="JetBrains Mono,monospace">N</text><g transform="rotate(${deg+180} 32 32)"><path d="M32 12 L38 30 L32 26 L26 30 Z" fill="var(--kite)"/><line x1="32" y1="26" x2="32" y2="50" stroke="var(--kite)" stroke-width="3"/></g></svg>`;}
+function ring(v){const r=36,c=2*Math.PI*r,col=v>=75?"var(--ok)":v>=60?"var(--sea)":v>=50?"var(--warn)":"var(--bad)";return `<svg viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="${r}" fill="none" stroke="var(--line)" stroke-width="7"/><circle cx="42" cy="42" r="${r}" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c*v/100} ${c}" transform="rotate(-90 42 42)"/></svg>`;}
+
+/* ---------- list ---------- */
+function filtered(){
+  const maxP=+$("f-price").value,minW=+$("f-wind").value,maxD=+$("f-drive").value;
+  let arr=SPOTS.filter(s=>{
+    if($("f-ko").checked&&Object.values(s.ko).some(([st])=>st==="nee"))return false;
+    if($("f-waves").checked&&!s.wavesOk)return false;
+    if($("f-warm").checked&&s.water<24)return false;
+    if($("f-single").checked&&!s.single)return false;
+    if(total(s)>maxP)return false;
+    if(s.windPct<minW)return false;
+    if(s.drive>maxD)return false;
+    return true;
+  }).map(s=>({s,sc:score(s)}));
+  const k=$("f-sort").value;
+  arr.sort((a,b)=>k==="price"?total(a.s)-total(b.s):k==="wind"?b.s.windPct-a.s.windPct:k==="drive"?a.s.drive-b.s.drive:b.sc-a.sc);
+  return arr;
+}
+function koPills(s){return Object.entries(s.ko).map(([k,[st]])=>`<span class="pill ${st}" title="${KOL[k]}: ${st}">${KOL[k]}</span>`).join("");}
+function render(){
+  $("f-price-v").textContent=fmt(+$("f-price").value);
+  $("f-wind-v").textContent=$("f-wind").value+"%";
+  $("f-drive-v").textContent=$("f-drive").value+" min";
+  const arr=filtered(),L=$("list");
+  if(!arr.length){L.innerHTML=`<div class="empty">Geen bestemming voldoet aan deze filters. Verruim de prijs of de windkans.</div>`;return;}
+  L.innerHTML=arr.map(({s,sc},i)=>`<button class="card${i===0&&$("f-sort").value==="score"?" first":""}" data-id="${s.id}" type="button">
+    <div class="rank">${i+1}</div>
+    <div class="thumb">${heroImg(s)?`<img src="${heroImg(s)}" alt="${s.name}" loading="lazy">`:postcard(s,300,200)}</div>
+    <div class="cbody"><h2>${s.name}</h2><div class="sub">${s.country} · ${s.region} · ${s.tagline}</div>
+      <div class="chips"><span class="chip">Wind <b>${s.windPct}%</b></span><span class="chip">Gem. <b>${s.avgKn} kn</b></span><span class="chip">Spot <b>${s.drive} min</b></span><span class="chip">Totaal <b>${fmt(total(s))}</b> p.p.</span><span class="chip">Water <b>${s.water}°</b></span>${s.wavesOk?'<span class="chip">Golven</span>':""}</div>
+      <div class="ko">${koPills(s)}</div></div>
+    <div class="score"><div class="ring">${ring(sc)}<div class="num">${sc}<small>%</small></div></div></div>
+  </button>`).join("");
+  L.querySelectorAll(".card").forEach(b=>b.addEventListener("click",()=>openD(b.dataset.id)));
+}
+
+/* ---------- detail ---------- */
+let curTab="spot";
+function openD(id){
+  const s=SPOTS.find(x=>x.id===id);if(!s)return;
+  const sc=score(s),ss=sub(s),pen=$("f-pen").checked?penalty(s):0;
+  const d=$("drawer");
+  const tabs=[["spot","Spot"],["wind","Wind"],["villas","Villa's"],["flights","Vluchten"],["cost","Kosten"],["score","Score"]];
+  d.innerHTML=`<div class="hero">${heroImg(s)?`<img class="hi" src="${heroImg(s)}" alt="Kitespot ${s.name}"><span class="cap">Foto: ${PHOTOS[s.id][0][1]}</span>`:postcard(s,1000,420,true)}<button class="close" id="dclose" type="button" aria-label="Sluiten">✕</button></div>
+  <div class="dhead"><div><div class="eyebrow">${s.country} · ${s.region}</div><h2 id="d-title">${s.name}</h2><p class="muted" style="margin:4px 0 0">${s.tagline}</p></div>
+  <div class="score"><div class="ring">${ring(sc)}<div class="num">${sc}<small>%</small></div></div><div class="lbl">eindscore</div></div></div>
+  <div class="dbody">
+   <div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button class="tab" role="tab" data-t="${k}" aria-selected="${k===curTab}" type="button">${l}</button>`).join("")}</div>
+   <div id="tabc"></div>
+  </div>`;
+  const T={
+  spot:`<div class="sec"><div class="box"><p style="margin:0">${s.desc}</p></div>
+    <div class="kv"><div><div class="k">Dichtstbijzijnde goede spot</div><div class="v">${s.drive} min</div></div><div><div class="k">Golfrijden</div><div class="v">${s.wavesOk?"Ja":"Nee"}</div></div><div><div class="k">Water</div><div class="v">${s.water} °C</div></div><div><div class="k">Wetsuit</div><div class="v" style="font-size:14px">${s.wetsuit}</div></div></div>
+    <div class="box tbl"><h3>Spots in de buurt</h3><table><thead><tr><th>Spot</th><th>Water</th><th>Niveau</th><th>Rijden</th><th>Info</th></tr></thead><tbody>${s.spots.map(x=>`<tr><td><b>${x.n}</b></td><td>${x.t}</td><td>${x.l}</td><td class="mono">${x.m} min</td><td>${x.x}</td></tr>`).join("")}</tbody></table></div>
+    <div class="two"><div class="box"><h3>Beginners</h3><p style="margin:0">${s.beg}</p></div><div class="box"><h3>Gevorderden</h3><p style="margin:0">${s.adv}</p></div></div>
+    <div class="box"><h3>Golven</h3><p style="margin:0">${s.waves}</p></div>
+    <div class="box"><h3>Restaurants</h3><ul class="pm">${s.rest.map(([n,t])=>`<li><b>${n}</b>: ${t}</li>`).join("")}</ul></div>
+    <div class="two"><div class="box"><h3>Plus</h3><ul class="pm">${s.pros.map(x=>`<li>${x}</li>`).join("")}</ul></div><div class="box"><h3>Min</h3><ul class="pm">${s.cons.map(x=>`<li>${x}</li>`).join("")}</ul></div></div>
+    ${PHOTOS[s.id]?`<div class="box"><h3>Foto's van de spot</h3><div class="gal">${PHOTOS[s.id].map(([f,c,u])=>`<figure><img src="img/${f}" alt="${s.name}" loading="lazy"><figcaption><a href="${u}" target="_blank" rel="noopener">${c}</a></figcaption></figure>`).join("")}</div></div>`:""}<div class="box"><h3>Meer foto's en spotinfo</h3><ul class="pm">${s.photos.map(([t,u])=>`<li><a href="${u}" target="_blank" rel="noopener">${t}</a></li>`).join("")}</ul></div></div>`,
+  wind:`<div class="sec"><div class="box" style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center">${compass(s.dirDeg)}<div><h3>${s.dir}</h3><p class="note" style="margin:0">Pijl wijst waar de wind naartoe waait.</p></div></div>
+    <div class="kv"><div><div class="k">Windkans juni (≥15 kn)</div><div class="v">${s.windPct}%</div><div class="bar" style="margin-top:6px"><i style="width:${s.windPct}%"></i></div></div><div><div class="k">Gemiddeld (middag)</div><div class="v">${s.avgKn} kn · ${beaufort(s.avgKn)} Bft</div></div><div><div class="k">Lucht</div><div class="v">${s.air} °C</div></div><div><div class="k">Water</div><div class="v">${s.water} °C</div></div></div>
+    <div class="box"><h3>Reken op</h3><p style="margin:0">Van de 7 dagen zijn er naar verwachting <b class="mono">${Math.round(s.windPct/100*7)}</b> kitebaar met ≥15 kn. Percentages zijn schattingen op basis van meerjarige statistieken en spotgidsen.</p></div></div>`,
+  villas:`<div class="sec">${s.villas.map(v=>`<div class="box villa">${vimg(s,v)?`<img class="vimg" src="${vimg(s,v)}" alt="${v.n}" loading="lazy">`:""}<div><h4>${v.pick?"★ ":""}${v.n}</h4><div class="note">${v.loc}</div>${v.flag?`<div class="flag">${v.flag}</div>`:""}</div><div class="price">${fmt(v.p)}<div class="note">per week · ${fmt(v.p/9)} p.p.</div></div>
+    <div class="meta"><span class="chip"><b>${v.bd}</b> slpk</span><span class="chip"><b>${v.ba}</b> badk</span><span class="chip"><b>${v.sl}</b> pers.</span><span class="chip">Zwembad: ${v.pool}</span><span class="chip">Spot <b>${v.m} min</b></span><span class="chip">Annuleren: ${v.c}</span><span class="chip">Tofheid <b>${v.cool}/10</b></span></div>
+    <p>${v.d}</p><p class="note">${v.cn}</p><p><a href="${v.u}" target="_blank" rel="noopener">Bekijk villa en foto's</a></p></div>`).join("")}<p class="note">★ = villa waarmee de totaalprijs is berekend.</p></div>`,
+  flights:`<div class="sec"><div class="box tbl"><table><thead><tr><th>Maatschappij</th><th>Route</th><th>Dagen</th><th>Donderdag</th><th>Duur</th><th>Retour p.p.</th></tr></thead><tbody>${s.flights.map(f=>`<tr><td><b>${f.a}</b><div class="note">${f.n}</div></td><td class="mono">${f.r}</td><td>${f.d}</td><td><span class="pill ${f.th}">${f.th}</span></td><td class="mono">${f.t}</td><td class="mono">${f.p?fmt(f.p):"-"}</td></tr>`).join("")}</tbody></table></div>
+    <div class="box"><h3>Transfer</h3><p style="margin:0">${s.transferNote}</p></div>
+    <p class="note">Prijzen incl. 1 ruimbagage, geschat voor eind juni. Kitebags komen erbij (±€45-70 per tas per vlucht, te delen).</p></div>`,
+  cost:`<div class="sec"><div class="box tbl"><table class="cost"><thead><tr><th>Post</th><th>Toelichting</th><th>p.p.</th></tr></thead><tbody>
+    <tr><td>Vlucht</td><td>Retour incl. bagage</td><td>${fmt(s.cost.flight)}</td></tr>
+    <tr><td>Villa</td><td>${s.villas.find(v=>v.pick).n}, ${fmt(s.villas.find(v=>v.pick).p)} / 9</td><td>${fmt(s.cost.villa)}</td></tr>
+    <tr><td>Vervoer</td><td>${s.car.setup}, ${fmt(s.car.tot)} / 9</td><td>${fmt(s.cost.car)}</td></tr>
+    <tr class="tot"><td>Totaal</td><td></td><td>${fmt(total(s))}</td></tr></tbody></table></div>
+    <div class="box"><h3>Knock-outs</h3><ul class="pm">${Object.entries(s.ko).map(([k,[st,n]])=>`<li><span class="pill ${st}">${st}</span> <b>${KOL[k]}</b>: ${n}</li>`).join("")}</ul></div></div>`,
+  score:`<div class="sec"><div class="box"><div class="subscores">${CRIT.map(c=>`<div class="ss"><span>${c.label} <span class="note">(${W[c.k]})</span></span><span class="mono">${ss[c.k].toFixed(1)}</span><div class="bar"><i style="width:${ss[c.k]*10}%"></i></div></div>`).join("")}</div></div>
+    <p class="note">Wensscore = gewogen gemiddelde van de deelscores (0-10). ${pen?`Knock-out-aftrek: -${pen} punten.`:"Knock-out-aftrek staat uit."} Pas de weging aan in het linkerpaneel.</p>
+    <div class="box"><h3>Bronnen</h3><ul class="pm">${s.src.map(u=>`<li><a href="${u}" target="_blank" rel="noopener">${u.replace(/^https?:\/\/(www\.)?/,"").slice(0,70)}</a></li>`).join("")}</ul></div></div>`
+  };
+  const show=t=>{curTab=t;$("tabc").innerHTML=T[t];d.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.t===t));};
+  d.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>show(b.dataset.t)));
+  show(curTab);
+  $("dclose").addEventListener("click",closeD);
+  $("ov").hidden=false;d.scrollTop=0;document.body.style.overflow="hidden";
+  try{history.replaceState(null,"","#"+id);}catch(e){}
+  $("dclose").focus();
+}
+function closeD(){$("ov").hidden=true;document.body.style.overflow="";try{history.replaceState(null,"",location.pathname+location.search);}catch(e){}}
+$("ov").addEventListener("click",e=>{if(e.target.id==="ov")closeD();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("ov").hidden)closeD();});
+
+/* ---------- weights ---------- */
+function buildW(){
+  $("weights").innerHTML=CRIT.map(c=>`<div class="w-row"><label for="w-${c.k}">${c.label}</label><span class="mono" id="wv-${c.k}">${W[c.k]}</span><input type="range" id="w-${c.k}" min="0" max="30" step="1" value="${W[c.k]}"></div>`).join("");
+  CRIT.forEach(c=>$("w-"+c.k).addEventListener("input",e=>{W[c.k]=+e.target.value;$("wv-"+c.k).textContent=W[c.k];try{localStorage.setItem("kt-w",JSON.stringify(W));}catch(err){}render();}));
+}
+$("wreset").addEventListener("click",()=>{W={...DEF};try{localStorage.removeItem("kt-w");}catch(e){}buildW();render();});
+["f-ko","f-waves","f-warm","f-single","f-price","f-wind","f-drive","f-sort","f-pen"].forEach(id=>$(id).addEventListener("input",render));
+buildW();render();
+if(location.hash){const id=location.hash.slice(1);if(SPOTS.some(s=>s.id===id))openD(id);}
+</script>
+
+</body></html>
